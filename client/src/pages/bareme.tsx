@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { PricingScale } from "@shared/schema";
 import { Euro, Building2, Home, Key } from "lucide-react";
-import logoKeylor from "@assets/Eylor (1)_1762455382637.png";
 
 function Bareme() {
   const { data: scales, isLoading } = useQuery<PricingScale[]>({
@@ -72,9 +71,11 @@ function Bareme() {
       {/* En-tête avec logo - visible à l'écran et à l'impression */}
       <section className="relative py-8 px-4 bg-gradient-to-br from-primary/5 to-background border-b">
         <div className="container mx-auto max-w-7xl">
-          <div className="flex items-start justify-between gap-8 mb-6">
-            <img src={logoKeylor} alt="KEYLOR" className="h-24 md:h-28 object-contain" data-testid="img-logo" />
+          <div className="flex items-center justify-center gap-8 mb-6">
             <div className="flex-1 text-center">
+              <div className="font-serif text-3xl md:text-5xl font-bold mb-4 text-accent" data-testid="text-logo">
+                KEYLOR
+              </div>
               <h1 className="font-serif text-2xl md:text-4xl font-normal mb-2 text-primary">
                 Barème d'honoraires {currentYear}
               </h1>
@@ -85,7 +86,6 @@ function Bareme() {
                 Tarifs TTC - TVA au taux en vigueur (20%)
               </p>
             </div>
-            <div className="w-24 md:w-28"></div> {/* Spacer pour centrer le titre */}
           </div>
         </div>
       </section>
