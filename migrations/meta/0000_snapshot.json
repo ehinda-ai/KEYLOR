@@ -1,0 +1,928 @@
+{
+  "id": "bc0d8f5d-81e9-42cf-9f61-50acb7cc39c0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.appointments": {
+      "name": "appointments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "property_id": {
+          "name": "property_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telephone": {
+          "name": "telephone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heure": {
+          "name": "heure",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_rgpd": {
+          "name": "consent_rgpd",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "statut": {
+          "name": "statut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'en_attente'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.contacts": {
+      "name": "contacts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telephone": {
+          "name": "telephone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sujet": {
+          "name": "sujet",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "property_id": {
+          "name": "property_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_rgpd": {
+          "name": "consent_rgpd",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "statut": {
+          "name": "statut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'nouveau'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.estimations": {
+      "name": "estimations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telephone": {
+          "name": "telephone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "adresse": {
+          "name": "adresse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type_propriete": {
+          "name": "type_propriete",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surface": {
+          "name": "surface",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pieces": {
+          "name": "pieces",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chambres": {
+          "name": "chambres",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "annee_construction": {
+          "name": "annee_construction",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "etat": {
+          "name": "etat",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimation_auto": {
+          "name": "estimation_auto",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consent_rgpd": {
+          "name": "consent_rgpd",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "statut": {
+          "name": "statut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'en_attente'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.loan_simulations": {
+      "name": "loan_simulations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "montant_pret": {
+          "name": "montant_pret",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "taux_interet": {
+          "name": "taux_interet",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duree_annees": {
+          "name": "duree_annees",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apport": {
+          "name": "apport",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telephone": {
+          "name": "telephone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mensualite": {
+          "name": "mensualite",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cout_total": {
+          "name": "cout_total",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pricing_scales": {
+      "name": "pricing_scales",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "categorie": {
+          "name": "categorie",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tranche_min": {
+          "name": "tranche_min",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tranche_max": {
+          "name": "tranche_max",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "honoraires": {
+          "name": "honoraires",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "taux_pourcentage": {
+          "name": "taux_pourcentage",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unite": {
+          "name": "unite",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "minimum": {
+          "name": "minimum",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "annee": {
+          "name": "annee",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ordre": {
+          "name": "ordre",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "actif": {
+          "name": "actif",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.properties": {
+      "name": "properties",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "titre": {
+          "name": "titre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_type": {
+          "name": "transaction_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'vente'"
+        },
+        "prix": {
+          "name": "prix",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surface": {
+          "name": "surface",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pieces": {
+          "name": "pieces",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chambres": {
+          "name": "chambres",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "localisation": {
+          "name": "localisation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ville": {
+          "name": "ville",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code_postal": {
+          "name": "code_postal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "photos": {
+          "name": "photos",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "ARRAY[]::text[]"
+        },
+        "featured": {
+          "name": "featured",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "statut": {
+          "name": "statut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'disponible'"
+        },
+        "dpe": {
+          "name": "dpe",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ges": {
+          "name": "ges",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "honoraires": {
+          "name": "honoraires",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "montant_honoraires": {
+          "name": "montant_honoraires",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "copropriete": {
+          "name": "copropriete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "nombre_lots": {
+          "name": "nombre_lots",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "charges_annuelles": {
+          "name": "charges_annuelles",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "taxe_fonciere": {
+          "name": "taxe_fonciere",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "annee_construction": {
+          "name": "annee_construction",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prix_basse_saison": {
+          "name": "prix_basse_saison",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prix_moyenne_saison": {
+          "name": "prix_moyenne_saison",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prix_haute_saison": {
+          "name": "prix_haute_saison",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "depot_garantie": {
+          "name": "depot_garantie",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "taxe_sejour": {
+          "name": "taxe_sejour",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "personnes_max": {
+          "name": "personnes_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "animaux_acceptes": {
+          "name": "animaux_acceptes",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "fumeur_accepte": {
+          "name": "fumeur_accepte",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "wifi": {
+          "name": "wifi",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "tv": {
+          "name": "tv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "lave_linge": {
+          "name": "lave_linge",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "lave_vaisselle": {
+          "name": "lave_vaisselle",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "parking": {
+          "name": "parking",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "piscine": {
+          "name": "piscine",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "climatisation": {
+          "name": "climatisation",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "menage_inclus": {
+          "name": "menage_inclus",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "linge_inclus": {
+          "name": "linge_inclus",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "conciergerie_incluse": {
+          "name": "conciergerie_incluse",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "badge": {
+          "name": "badge",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.property_alerts": {
+      "name": "property_alerts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telephone": {
+          "name": "telephone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_type": {
+          "name": "transaction_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ville": {
+          "name": "ville",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prix_max": {
+          "name": "prix_max",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "surface_min": {
+          "name": "surface_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chambres_min": {
+          "name": "chambres_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.time_slots": {
+      "name": "time_slots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "property_id": {
+          "name": "property_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heure_debut": {
+          "name": "heure_debut",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "heure_fin": {
+          "name": "heure_fin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "disponible": {
+          "name": "disponible",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
