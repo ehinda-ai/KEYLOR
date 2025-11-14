@@ -45,10 +45,10 @@ import {
 import { randomUUID } from "crypto";
 import session from "express-session";
 import createMemoryStore from "memorystore";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pkg from "pg";
+const { Pool } = pkg;
 import { eq, and, sql } from "drizzle-orm";
-import ws from "ws";
 import connectPgSimple from "connect-pg-simple";
 
 export interface IStorage {
@@ -1308,9 +1308,6 @@ export class MemStorage implements IStorage {
     return this.seasonalAvailabilitiesMap.delete(id);
   }
 }
-
-// Configuration WebSocket pour Neon serverless
-neonConfig.webSocketConstructor = ws;
 
 // Classe DBStorage utilisant PostgreSQL avec Drizzle ORM
 export class DBStorage implements IStorage {
