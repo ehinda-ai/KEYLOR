@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Property } from "@shared/schema";
 import { AmenitiesIcons, CapacityInfo } from "./AmenitiesIcons";
-import { getPropertyImageUrl } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 interface PropertyCardProps {
   property: Property;
@@ -24,7 +24,7 @@ export function PropertyCard({ property, searchDates }: PropertyCardProps) {
     }).format(parseFloat(price));
   };
 
-  const mainPhoto = getPropertyImageUrl(property.photos[0]);
+  const mainPhoto = resolveImageUrl(property.photos[0]) || '/placeholder.jpg';
 
   const buildPropertyUrl = () => {
     let url = `/proprietes/${property.id}`;

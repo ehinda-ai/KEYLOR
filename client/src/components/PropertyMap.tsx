@@ -5,7 +5,7 @@ import { Property } from "@shared/schema";
 import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getPropertyImageUrl } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/imageUrl";
 import "leaflet/dist/leaflet.css";
 
 interface PropertyMapProps {
@@ -125,7 +125,7 @@ export function PropertyMap({ properties }: PropertyMapProps) {
                 <Card className="border-0 shadow-none p-0 min-w-[250px]">
                   {property.photos && property.photos.length > 0 && (
                     <img
-                      src={getPropertyImageUrl(property.photos[0])}
+                      src={resolveImageUrl(property.photos[0]) || '/placeholder.jpg'}
                       alt={property.titre}
                       className="w-full h-32 object-cover rounded-t-md"
                     />

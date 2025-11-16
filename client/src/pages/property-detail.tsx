@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/form";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { getPropertyImageUrl } from "@/lib/utils";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 export default function PropertyDetailPage() {
   const [, params] = useRoute("/proprietes/:id");
@@ -127,7 +127,7 @@ export default function PropertyDetailPage() {
                 <div className="space-y-4">
                   <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
                     <img
-                      src={getPropertyImageUrl(property.photos[selectedImageIndex])}
+                      src={resolveImageUrl(property.photos[selectedImageIndex]) || '/placeholder.jpg'}
                       alt={`${property.titre} - Image ${selectedImageIndex + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -144,7 +144,7 @@ export default function PropertyDetailPage() {
                           data-testid={`button-thumbnail-${index}`}
                         >
                           <img
-                            src={getPropertyImageUrl(photo)}
+                            src={resolveImageUrl(photo) || '/placeholder.jpg'}
                             alt={`Miniature ${index + 1}`}
                             className="w-full h-full object-cover"
                           />
