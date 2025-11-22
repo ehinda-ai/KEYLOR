@@ -153,7 +153,7 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
+      <div className="h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4 -mt-20">
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold mb-2 text-gray-900">Accès Admin</h1>
           <p className="text-gray-600 mb-6">Mon compte - Gestion KEYLOR</p>
