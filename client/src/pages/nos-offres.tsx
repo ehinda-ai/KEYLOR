@@ -456,27 +456,18 @@ export default function NosOffresPage() {
                 </Button>
               </Card>
             ) : transactionType === "location_saisonniere" ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-1">
-                  <div className="h-[400px] sticky top-24">
-                    <PropertyMap properties={filteredProperties} />
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredProperties.map((property) => (
+                  <div key={property.id}>
+                    <PropertyCard 
+                      property={property}
+                      searchDates={{
+                        checkIn: filters.checkIn,
+                        checkOut: filters.checkOut
+                      }}
+                    />
                   </div>
-                </div>
-                <div className="lg:col-span-2">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {filteredProperties.map((property) => (
-                      <div key={property.id}>
-                        <PropertyCard 
-                          property={property}
-                          searchDates={{
-                            checkIn: filters.checkIn,
-                            checkOut: filters.checkOut
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
