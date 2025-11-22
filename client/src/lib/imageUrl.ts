@@ -1,9 +1,8 @@
 /**
  * Résout les paths API d'images vers des URLs complètes
- * En dev : pointe vers https://keylor-intranet-Keyvalor.replit.app (intranet Replit)
- * En prod : utilise le proxy Nginx de keylor.fr qui redirige vers intranet.keylor.fr
+ * Après la fusion, tout est sur le MÊME serveur KEYLOR unifié
  * 
- * Les images sont stockées dans Object Storage côté intranet.
+ * Les images sont stockées dans Object Storage côté serveur.
  * /objects/uploads/* → images privées (admin)
  * /objects/public/* → images publiques (vitrine)
  */
@@ -17,13 +16,10 @@ export function resolveImageUrl(objectPath: string | null | undefined): string |
   
   // Chemins relatifs depuis Object Storage
   if (objectPath.startsWith('/objects/')) {
-    if (import.meta.env.DEV) {
-      // En dev : pointer vers l'intranet Replit
-      return `https://keylor-intranet-Keyvalor.replit.app${objectPath}`;
-    } else {
-      // En prod : Nginx de keylor.fr proxie /objects/* vers intranet.keylor.fr
-      return objectPath;
-    }
+    // Maintenant qu'on a MERGÉ vitrine + intranet en UN seul serveur KEYLOR,
+    // les images viennent du MÊME serveur (pas d'URL externe)
+    // En dev et prod, utiliser le serveur actuel
+    return objectPath;
   }
   
   // Autres chemins relatifs
