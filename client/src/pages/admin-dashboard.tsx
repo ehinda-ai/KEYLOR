@@ -14,6 +14,7 @@ import { ContactCarouselAdmin } from "@/components/contact-carousel-admin";
 import { SocialReviewsAdmin } from "@/components/social-reviews-admin";
 import { StudyApplications } from "@/components/study-applications";
 import { PlanningAdmin } from "@/components/planning-admin";
+import { ConfigPdfsAdmin } from "@/components/config-pdfs-admin";
 
 // Composants CRUD nouveaux
 import { PropertiesAdmin } from "@/components/properties-admin";
@@ -601,6 +602,15 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <SocialReviewsAdmin />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Documents légaux (PDFs)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ConfigPdfsAdmin />
                 </CardContent>
               </Card>
             </div>

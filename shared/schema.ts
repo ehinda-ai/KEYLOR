@@ -537,3 +537,23 @@ export const insertSettingSchema = createInsertSchema(settings).omit({
 
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
 export type Setting = typeof settings.$inferSelect;
+
+// Documents légaux (PDFs à afficher en bas du site)
+export const sitePdfs = pgTable("site_pdfs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  nom: text("nom").notNull(), // Titre du document (ex: "Barème de tarifs", "Mentions légales")
+  description: text("description"), // Description brève
+  url: text("url").notNull(), // URL du fichier PDF
+  type: text("type").notNull(), // "bareme", "mentions_legales", "conditions", "autre"
+  ordre: integer("ordre").notNull().default(0), // Ordre d'affichage
+  actif: boolean("actif").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertSitePdfSchema = createInsertSchema(sitePdfs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertSitePdf = z.infer<typeof insertSitePdfSchema>;
+export type SitePdf = typeof sitePdfs.$inferSelect;

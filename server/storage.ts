@@ -31,6 +31,8 @@ import {
   type InsertRentalApplication,
   type Setting,
   type InsertSetting,
+  type SitePdf,
+  type InsertSitePdf,
   properties,
   appointments,
   contacts,
@@ -47,6 +49,7 @@ import {
   seasonalAvailability,
   rentalApplications,
   settings,
+  sitePdfs,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import session from "express-session";
@@ -166,6 +169,13 @@ export interface IStorage {
 
   getSetting(key: string): Promise<Setting | undefined>;
   updateSetting(key: string, value: string): Promise<Setting>;
+
+  getSitePdf(id: string): Promise<SitePdf | undefined>;
+  getAllSitePdfs(): Promise<SitePdf[]>;
+  getActiveSitePdfs(): Promise<SitePdf[]>;
+  createSitePdf(pdf: InsertSitePdf): Promise<SitePdf>;
+  updateSitePdf(id: string, pdf: Partial<InsertSitePdf>): Promise<SitePdf | undefined>;
+  deleteSitePdf(id: string): Promise<boolean>;
 }
 
 const MemoryStore = createMemoryStore(session);
@@ -1946,6 +1956,35 @@ export class DBStorage implements IStorage {
 
   async deleteRentalApplication(id: string): Promise<boolean> {
     const result = await this.db.delete(rentalApplications).where(eq(rentalApplications.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Site PDFs
+  async getSitePdf(id: string): Promise<SitePdf | undefined> {
+    const result = await this.db.select().from(sitePdfs).where(eq(sitePdfs.id, id));
+    return result[0];
+  }
+
+  async getAllSitePdfs(): Promise<SitePdf[]> {
+    return await this.db.select().from(sitePdfs).orderBy(sitePdfs.ordre);
+  }
+
+  async getActiveSitePdfs(): Promise<SitePdf[]> {
+    return await this.db.select().from(sitePdfs).where(eq(sitePdfs.actif, true)).orderBy(sitePdfs.ordre);
+  }
+
+  async createSitePdf(pdf: InsertSitePdf): Promise<SitePdf> {
+    const result = await this.db.insert(sitePdfs).values(pdf).returning();
+    return result[0];
+  }
+
+  async updateSitePdf(id: string, pdf: Partial<InsertSitePdf>): Promise<SitePdf | undefined> {
+    const result = await this.db.update(sitePdfs).set(pdf).where(eq(sitePdfs.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteSitePdf(id: string): Promise<boolean> {
+    const result = await this.db.delete(sitePdfs).where(eq(sitePdfs.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
 

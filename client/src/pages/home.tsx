@@ -1,11 +1,11 @@
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Property, SocialMediaLink } from "@shared/schema";
+import { Property, SocialMediaLink, SitePdf } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PropertyCard } from "@/components/property-card";
 import { HeroCarousel } from "@/components/hero-carousel";
-import { Home, TrendingUp, FileCheck, Phone, Mail, MapPin, Shield, Award, Users, CheckCircle2, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Home, TrendingUp, FileCheck, Phone, Mail, MapPin, Shield, Award, Users, CheckCircle2, Facebook, Instagram, Linkedin, Twitter, Youtube, FileText } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
 import keylorLogo from "@/assets/keylor-logo.png";
 
@@ -18,8 +18,13 @@ export default function HomePage() {
     queryKey: ["/api/social-links"],
   });
 
+  const { data: pdfs = [] } = useQuery<SitePdf[]>({
+    queryKey: ["/api/site-pdfs"],
+  });
+
   const featuredProperties = properties?.filter(p => p.featured).slice(0, 3) || [];
   const activeSocialLinks = socialLinks.filter(link => link.actif).sort((a, b) => a.ordre - b.ordre);
+  const activePdfs = pdfs.filter(p => p.actif).sort((a, b) => a.ordre - b.ordre);
 
   const getSocialIcon = (plateforme: string) => {
     switch (plateforme) {
@@ -369,6 +374,28 @@ export default function HomePage() {
                     data-testid={`social-link-${link.plateforme}`}
                   >
                     {getSocialIcon(link.plateforme)}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Legal Documents (PDFs) */}
+          {activePdfs.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-border/50">
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {activePdfs.map((pdf) => (
+                  <a
+                    key={pdf.id}
+                    href={pdf.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-md hover-elevate active-elevate-2 text-muted-foreground hover:text-accent transition-colors text-sm"
+                    data-testid={`pdf-link-${pdf.id}`}
+                    title={pdf.description || pdf.nom}
+                  >
+                    <FileText className="h-4 w-4" />
+                    {pdf.nom}
                   </a>
                 ))}
               </div>

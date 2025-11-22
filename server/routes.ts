@@ -18,6 +18,7 @@ import {
   insertSeasonalBookingRequestSchema,
   insertSeasonalAvailabilitySchema,
   insertRentalApplicationSchema,
+  insertSitePdfSchema,
 } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { sendBookingRequestEmail, sendBookingConfirmationEmail, sendBookingRefusalEmail, sendBookingCancellationEmail, sendAppointmentConfirmationEmails, sendAppointmentAdminConfirmationEmail, sendAppointmentCancellationEmail } from "./email";
@@ -1933,6 +1934,57 @@ Réponds au format JSON exact suivant:
       }
     } catch (error) {
       res.status(500).json({ error: "Erreur" });
+    }
+  });
+
+  // Site PDFs Routes
+  app.get("/api/site-pdfs", async (req, res) => {
+    try {
+      const pdfs = await storage.getAllSitePdfs();
+      res.json(pdfs);
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la récupération des PDFs" });
+    }
+  });
+
+  app.post("/api/site-pdfs", requireAdminAuth, async (req, res) => {
+    try {
+      const validatedData = insertSitePdfSchema.parse(req.body);
+      const pdf = await storage.createSitePdf(validatedData);
+      res.status(201).json(pdf);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Erreur lors de la création du PDF" });
+    }
+  });
+
+  app.patch("/api/site-pdfs/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const validatedData = insertSitePdfSchema.partial().parse(req.body);
+      const pdf = await storage.updateSitePdf(req.params.id, validatedData);
+      if (!pdf) {
+        return res.status(404).json({ error: "PDF non trouvé" });
+      }
+      res.json(pdf);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Erreur lors de la mise à jour du PDF" });
+    }
+  });
+
+  app.delete("/api/site-pdfs/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const deleted = await storage.deleteSitePdf(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "PDF non trouvé" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la suppression du PDF" });
     }
   });
 
