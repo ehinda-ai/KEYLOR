@@ -24,6 +24,9 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
   const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
 
+  // Retourner early si property est null
+  if (!property) return null;
+
   const monthlyRent = parseFloat(property.prix.toString());
 
   const form = useForm<InsertRentalApplication>({
