@@ -60,6 +60,11 @@ export default function VendrePage() {
               <Calculator className="mr-2 h-5 w-5" />
               Estimer mon bien maintenant
             </Button>
+            <Link href="/rendez-vous?origine=vendre" onClick={() => window.scrollTo(0, 0)}>
+              <Button size="lg" variant="outline" data-testid="button-appointment-hero">
+                Prendre un rendez-vous
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
