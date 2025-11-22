@@ -458,7 +458,7 @@ export function SeasonalBookingCard({
                   )}
                   {property.depotGarantie && (
                     <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>Caution (non encaissée)</span>
+                      <span>Caution</span>
                       <span>{formatPrice(property.depotGarantie)}</span>
                     </div>
                   )}
