@@ -20,6 +20,7 @@ import { SlidersHorizontal, Home, Map } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { SeasonalSearchBar } from "@/components/SeasonalSearchBar";
 import { isPropertyAvailable } from "@/utils/availability";
+import { RentalApplicationForm } from "@/components/rental-application-form";
 
 const getDefaultFilters = (transactionType: "vente" | "location" | "location_saisonniere") => ({
   type: "tous",
@@ -36,6 +37,7 @@ export default function NosOffresPage() {
   const [location, setLocation] = useLocation();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"carte" | "liste">("carte");
+  const [selectedPropertyForApplication, setSelectedPropertyForApplication] = useState<Property | null>(null);
   
   const [transactionType, setTransactionType] = useState<"vente" | "location" | "location_saisonniere">(() => {
     const storedTransaction = localStorage.getItem('savedTransactionType');
@@ -488,20 +490,40 @@ export default function NosOffresPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProperties.map((property) => (
-                  <PropertyCard 
-                    key={property.id} 
-                    property={property}
-                    searchDates={transactionType === "location_saisonniere" ? {
-                      checkIn: filters.checkIn,
-                      checkOut: filters.checkOut
-                    } : undefined}
-                  />
+                  <div key={property.id} className="flex flex-col gap-3">
+                    <PropertyCard 
+                      property={property}
+                      searchDates={transactionType === "location_saisonniere" ? {
+                        checkIn: filters.checkIn,
+                        checkOut: filters.checkOut
+                      } : undefined}
+                    />
+                    {(transactionType === "location" || transactionType === "location_saisonniere") && (
+                      <Button 
+                        variant="default" 
+                        className="w-full"
+                        onClick={() => setSelectedPropertyForApplication(property)}
+                        data-testid={`button-apply-${property.id}`}
+                      >
+                        Déposer votre dossier
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </div>
       </section>
+
+      {/* Modal formulaire candidature location */}
+      <RentalApplicationForm
+        property={selectedPropertyForApplication!}
+        open={!!selectedPropertyForApplication}
+        onOpenChange={(open) => {
+          if (!open) setSelectedPropertyForApplication(null);
+        }}
+      />
     </div>
   );
 }

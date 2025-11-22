@@ -27,6 +27,8 @@ import {
   type InsertSeasonalBookingRequest,
   type SeasonalAvailability,
   type InsertSeasonalAvailability,
+  type RentalApplication,
+  type InsertRentalApplication,
   properties,
   appointments,
   contacts,
@@ -41,6 +43,7 @@ import {
   clientReviews,
   seasonalBookingRequests,
   seasonalAvailability,
+  rentalApplications,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import session from "express-session";
@@ -149,6 +152,14 @@ export interface IStorage {
   createSeasonalAvailability(availability: InsertSeasonalAvailability): Promise<SeasonalAvailability>;
   updateSeasonalAvailability(id: string, availability: Partial<InsertSeasonalAvailability>): Promise<SeasonalAvailability | undefined>;
   deleteSeasonalAvailability(id: string): Promise<boolean>;
+
+  getRentalApplication(id: string): Promise<RentalApplication | undefined>;
+  getAllRentalApplications(): Promise<RentalApplication[]>;
+  getRentalApplicationsByProperty(propertyId: string): Promise<RentalApplication[]>;
+  getRentalApplicationsByStatus(status: string): Promise<RentalApplication[]>;
+  createRentalApplication(app: InsertRentalApplication): Promise<RentalApplication>;
+  updateRentalApplication(id: string, app: Partial<InsertRentalApplication & { score?: number; scoreDetail?: string; tauxEffort?: number; statutSolvabilite?: string }>): Promise<RentalApplication | undefined>;
+  deleteRentalApplication(id: string): Promise<boolean>;
 }
 
 const MemoryStore = createMemoryStore(session);
@@ -1888,6 +1899,39 @@ export class DBStorage implements IStorage {
 
   async deleteSeasonalAvailability(id: string): Promise<boolean> {
     const result = await this.db.delete(seasonalAvailability).where(eq(seasonalAvailability.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Rental Applications
+  async getRentalApplication(id: string): Promise<RentalApplication | undefined> {
+    const result = await this.db.select().from(rentalApplications).where(eq(rentalApplications.id, id));
+    return result[0];
+  }
+
+  async getAllRentalApplications(): Promise<RentalApplication[]> {
+    return await this.db.select().from(rentalApplications).orderBy(rentalApplications.createdAt);
+  }
+
+  async getRentalApplicationsByProperty(propertyId: string): Promise<RentalApplication[]> {
+    return await this.db.select().from(rentalApplications).where(eq(rentalApplications.propertyId, propertyId)).orderBy(rentalApplications.createdAt);
+  }
+
+  async getRentalApplicationsByStatus(status: string): Promise<RentalApplication[]> {
+    return await this.db.select().from(rentalApplications).where(eq(rentalApplications.statut, status)).orderBy(rentalApplications.createdAt);
+  }
+
+  async createRentalApplication(app: InsertRentalApplication): Promise<RentalApplication> {
+    const result = await this.db.insert(rentalApplications).values(app).returning();
+    return result[0];
+  }
+
+  async updateRentalApplication(id: string, updates: Partial<InsertRentalApplication & { score?: number; scoreDetail?: string; tauxEffort?: number; statutSolvabilite?: string }>): Promise<RentalApplication | undefined> {
+    const result = await this.db.update(rentalApplications).set(updates).where(eq(rentalApplications.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteRentalApplication(id: string): Promise<boolean> {
+    const result = await this.db.delete(rentalApplications).where(eq(rentalApplications.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
 }

@@ -11,6 +11,7 @@ import { HeroImagesAdmin } from "@/components/hero-images-admin";
 import { PricingScalesAdmin } from "@/components/pricing-scales-admin";
 import { ContactCarouselAdmin } from "@/components/contact-carousel-admin";
 import { SocialReviewsAdmin } from "@/components/social-reviews-admin";
+import { StudyApplications } from "@/components/study-applications";
 
 // Composants CRUD nouveaux
 import { PropertiesAdmin } from "@/components/properties-admin";
@@ -246,6 +247,10 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
+            <TabsTrigger value="applications" className="gap-2">
+              <Mail className="w-4 h-4" />
+              <span className="hidden sm:inline">Dossiers</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stats" className="space-y-4">
@@ -348,6 +353,18 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="applications" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Étude des dossiers de candidature</CardTitle>
+                <CardDescription>Gestion, scoring et solvabilité des candidatures locataires</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <StudyApplications />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

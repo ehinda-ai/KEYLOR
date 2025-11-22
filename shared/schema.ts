@@ -437,3 +437,86 @@ export const insertClientReviewSchema = createInsertSchema(clientReviews).omit({
 
 export type InsertClientReview = z.infer<typeof insertClientReviewSchema>;
 export type ClientReview = typeof clientReviews.$inferSelect;
+
+// Applications de location (étude de dossiers)
+export const rentalApplications = pgTable("rental_applications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  propertyId: varchar("property_id").notNull(), // Annonce concernée
+  propertyTitle: text("property_title").notNull(),
+  monthlyRent: decimal("monthly_rent", { precision: 10, scale: 2 }).notNull(), // Loyer mensuel de l'annonce
+  
+  // Identité
+  civilite: text("civilite").notNull(), // M, Mme, Mlle
+  nom: text("nom").notNull(),
+  prenom: text("prenom").notNull(),
+  dateNaissance: text("date_naissance"), // format ISO date
+  lieuNaissance: text("lieu_naissance"),
+  
+  // Contact
+  telephone: text("telephone").notNull(),
+  email: text("email").notNull(),
+  adresseActuelle: text("adresse_actuelle").notNull(),
+  
+  // Situation familiale
+  situationFamiliale: text("situation_familiale"), // Célibataire, Marié, Concubin, PACS, Séparé, Divorcé, Veuf
+  nombrePersonnesCharge: integer("nombre_personnes_charge").default(0),
+  
+  // Situation professionnelle
+  profession: text("profession"),
+  typeContrat: text("type_contrat"), // CDI, CDD, Autres
+  dateEmbauche: text("date_embauche"),
+  entreprise: text("entreprise"),
+  adresseEntreprise: text("adresse_entreprise"),
+  
+  // Revenus (montants en euros)
+  salaireMensuel: decimal("salaire_mensuel", { precision: 10, scale: 2 }).default("0"),
+  allocations: decimal("allocations", { precision: 10, scale: 2 }).default("0"),
+  aidesLogement: decimal("aides_logement", { precision: 10, scale: 2 }).default("0"),
+  autresRevenus: decimal("autres_revenus", { precision: 10, scale: 2 }).default("0"),
+  totalRevenusMenuels: decimal("total_revenus_mensuels", { precision: 10, scale: 2 }).notNull(), // Calculé automatiquement
+  
+  // Garanties
+  typeGarantie: text("type_garantie"), // "caution_solidaire", "visale", "autre"
+  garantieDetail: text("garantie_detail"),
+  
+  // Scoring
+  score: integer("score").default(0), // 0-100
+  scoreDetail: text("score_detail"), // JSON des critères de scoring
+  
+  // Solvabilité
+  tauxEffort: decimal("taux_effort", { precision: 5, scale: 2 }), // Pourcentage (loyer / revenus * 100)
+  statutSolvabilite: text("statut_solvabilite"), // "excellent", "bon", "acceptable", "risque"
+  
+  // Pièces jointes (en base64)
+  piecesCandidature: text("pieces_candidature").array().default(sql`ARRAY[]::text[]`), // noms des fichiers
+  
+  // Suivi
+  statut: text("statut").notNull().default('nouveau'), // "nouveau", "en_etude", "demande_pieces", "refuse", "accepte"
+  notesAdmin: text("notes_admin"), // Notes libres de l'admin
+  
+  // Historique emails
+  emailsEnvoyes: text("emails_envoyes").array().default(sql`ARRAY[]::text[]`), // IDs des emails envoyés
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertRentalApplicationSchema = createInsertSchema(rentalApplications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  score: true,
+  scoreDetail: true,
+  tauxEffort: true,
+  statutSolvabilite: true,
+  totalRevenusMenuels: true,
+}).extend({
+  email: z.string().email("Email invalide"),
+  telephone: z.string().min(10, "Téléphone invalide"),
+  nom: z.string().min(2, "Nom requis"),
+  prenom: z.string().min(2, "Prénom requis"),
+  totalRevenusMenuels: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val),
+});
+
+export type InsertRentalApplication = z.infer<typeof insertRentalApplicationSchema>;
+export type RentalApplication = typeof rentalApplications.$inferSelect;

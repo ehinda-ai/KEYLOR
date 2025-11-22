@@ -17,6 +17,7 @@ import {
   insertClientReviewSchema,
   insertSeasonalBookingRequestSchema,
   insertSeasonalAvailabilitySchema,
+  insertRentalApplicationSchema,
 } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { sendBookingRequestEmail, sendBookingConfirmationEmail, sendBookingRefusalEmail, sendBookingCancellationEmail, sendAppointmentConfirmationEmails, sendAppointmentAdminConfirmationEmail, sendAppointmentCancellationEmail } from "./email";
@@ -1705,6 +1706,144 @@ Réponds au format JSON exact suivant:
     } catch (error) {
       console.error("Erreur lors de l'envoi de l'email:", error);
       res.status(500).json({ error: "Erreur lors de l'envoi de l'email" });
+    }
+  });
+
+  // Rental Applications Routes (Étude de dossiers)
+  app.get("/api/rental-applications", async (req, res) => {
+    try {
+      const { propertyId, status } = req.query;
+      let applications;
+
+      if (propertyId) {
+        applications = await storage.getRentalApplicationsByProperty(propertyId as string);
+      } else if (status) {
+        applications = await storage.getRentalApplicationsByStatus(status as string);
+      } else {
+        applications = await storage.getAllRentalApplications();
+      }
+
+      res.json(applications);
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la récupération des candidatures" });
+    }
+  });
+
+  app.get("/api/rental-applications/:id", async (req, res) => {
+    try {
+      const app = await storage.getRentalApplication(req.params.id);
+      if (!app) {
+        return res.status(404).json({ error: "Candidature non trouvée" });
+      }
+      res.json(app);
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la récupération de la candidature" });
+    }
+  });
+
+  app.post("/api/rental-applications", async (req, res) => {
+    try {
+      const validatedData = insertRentalApplicationSchema.parse(req.body);
+      const app = await storage.createRentalApplication(validatedData);
+      res.status(201).json(app);
+    } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Données invalides", details: error });
+      }
+      res.status(500).json({ error: "Erreur lors de la création de la candidature" });
+    }
+  });
+
+  app.patch("/api/rental-applications/:id", async (req, res) => {
+    try {
+      const validatedData = insertRentalApplicationSchema.partial().parse(req.body);
+      const app = await storage.updateRentalApplication(req.params.id, validatedData);
+      if (!app) {
+        return res.status(404).json({ error: "Candidature non trouvée" });
+      }
+      res.json(app);
+    } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Données invalides", details: error });
+      }
+      res.status(500).json({ error: "Erreur lors de la mise à jour de la candidature" });
+    }
+  });
+
+  app.post("/api/rental-applications/:id/score", async (req, res) => {
+    try {
+      const { score, scoreDetail, tauxEffort, statutSolvabilite } = req.body;
+      const app = await storage.updateRentalApplication(req.params.id, {
+        score: parseInt(score),
+        scoreDetail,
+        tauxEffort: parseFloat(tauxEffort),
+        statutSolvabilite
+      });
+      if (!app) {
+        return res.status(404).json({ error: "Candidature non trouvée" });
+      }
+      res.json(app);
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la mise à jour du score" });
+    }
+  });
+
+  app.post("/api/rental-applications/:id/email", async (req, res) => {
+    try {
+      const { recipientEmail, subject, htmlContent } = req.body;
+      if (!recipientEmail || !subject || !htmlContent) {
+        return res.status(400).json({ error: "Données manquantes" });
+      }
+
+      const mailjet = Mailjet.apiConnect(
+        process.env.MAILJET_API_KEY || '',
+        process.env.MAILJET_SECRET_KEY || ''
+      );
+
+      await mailjet
+        .post('send', { version: 'v3.1' })
+        .request({
+          Messages: [
+            {
+              From: {
+                Email: 'contact@keylor.fr',
+                Name: 'KEYLOR - Gestion Immobilière'
+              },
+              To: [
+                {
+                  Email: recipientEmail
+                }
+              ],
+              Subject: subject,
+              HTMLPart: htmlContent
+            }
+          ]
+        });
+
+      // Ajouter l'email à l'historique
+      const app = await storage.getRentalApplication(req.params.id);
+      if (app) {
+        const emailsEnvoyes = (app.emailsEnvoyes || []) as string[];
+        emailsEnvoyes.push(`${new Date().toISOString()}: ${subject}`);
+        await storage.updateRentalApplication(req.params.id, { emailsEnvoyes });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de l'email:", error);
+      res.status(500).json({ error: "Erreur lors de l'envoi de l'email" });
+    }
+  });
+
+  app.delete("/api/rental-applications/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteRentalApplication(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Candidature non trouvée" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la suppression de la candidature" });
     }
   });
 
