@@ -285,6 +285,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                       <FormControl>
                         <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-allocations" />
                       </FormControl>
+                      <p className="text-xs text-muted-foreground mt-1">Laisser à 0 si aucune allocation</p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -299,6 +300,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                       <FormControl>
                         <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-autres" />
                       </FormControl>
+                      <p className="text-xs text-muted-foreground mt-1">Laisser à 0 si aucun revenu supplémentaire</p>
                       <FormMessage />
                     </FormItem>
                   )}
