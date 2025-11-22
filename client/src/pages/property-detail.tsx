@@ -37,6 +37,7 @@ import {
 import { useState, useEffect, useMemo } from "react";
 import { AmenitiesIcons, CapacityInfo, PolicyBadges, IncludedServices } from "@/components/AmenitiesIcons";
 import { SeasonalBookingCard } from "@/components/SeasonalBookingCard";
+import { RentalApplicationForm } from "@/components/rental-application-form";
 import { format, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useForm } from "react-hook-form";
@@ -61,6 +62,7 @@ export default function PropertyDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [rentalApplicationOpen, setRentalApplicationOpen] = useState(false);
   
   const checkInParam = searchParams.get('checkIn');
   const checkOutParam = searchParams.get('checkOut');
@@ -424,7 +426,13 @@ export default function PropertyDetailPage() {
                       </Dialog>
 
                       {property.transactionType === "location" && (
-                        <Button variant="default" className="w-full" size="lg" data-testid="button-deposit-application">
+                        <Button 
+                          variant="default" 
+                          className="w-full" 
+                          size="lg" 
+                          onClick={() => setRentalApplicationOpen(true)}
+                          data-testid="button-deposit-application"
+                        >
                           <FileText className="mr-2 h-5 w-5" />
                           Déposer votre dossier de candidature
                         </Button>
@@ -455,6 +463,15 @@ export default function PropertyDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Formulaire de candidature location */}
+      {property && (property.transactionType === "location" || property.transactionType === "location_saisonniere") && (
+        <RentalApplicationForm
+          property={property}
+          open={rentalApplicationOpen}
+          onOpenChange={setRentalApplicationOpen}
+        />
+      )}
     </div>
   );
 }
