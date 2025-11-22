@@ -29,21 +29,21 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
   const monthlyRent = parseFloat(property.prix.toString());
 
-  const form = useForm<InsertRentalApplication>({
+  const form = useForm<any>({
     resolver: zodResolver(insertRentalApplicationSchema),
     defaultValues: {
       propertyId: property.id,
       propertyTitle: property.titre,
-      monthlyRent: monthlyRent.toString(),
+      monthlyRent: monthlyRent,
       civilite: "M",
       situationFamiliale: "Célibataire",
       typeContrat: "CDI",
       typeGarantie: "caution_solidaire",
-      salaireMensuel: "0",
-      allocations: "0",
-      aidesLogement: "0",
-      autresRevenus: "0",
-      totalRevenusMenuels: "0",
+      salaireMensuel: 0,
+      allocations: 0,
+      aidesLogement: 0,
+      autresRevenus: 0,
+      totalRevenusMenuels: 0,
     },
   });
 
@@ -69,7 +69,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
     },
   });
 
-  const handleSubmit = (data: InsertRentalApplication) => {
+  const handleSubmit = (data: any) => {
     // Calculer le total des revenus
     const total =
       (parseFloat(data.salaireMensuel?.toString() || "0")) +
@@ -77,7 +77,16 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       (parseFloat(data.aidesLogement?.toString() || "0")) +
       (parseFloat(data.autresRevenus?.toString() || "0"));
 
-    mutation.mutate({ ...data, totalRevenusMenuels: total.toString() });
+    const finalData = {
+      ...data,
+      monthlyRent: parseFloat(data.monthlyRent?.toString() || "0"),
+      salaireMensuel: parseFloat(data.salaireMensuel?.toString() || "0"),
+      allocations: parseFloat(data.allocations?.toString() || "0"),
+      aidesLogement: parseFloat(data.aidesLogement?.toString() || "0"),
+      autresRevenus: parseFloat(data.autresRevenus?.toString() || "0"),
+      totalRevenusMenuels: total,
+    };
+    mutation.mutate(finalData as InsertRentalApplication);
   };
 
   return (
