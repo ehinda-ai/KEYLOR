@@ -483,7 +483,7 @@ export default function AdminDashboard() {
         {/* Main content */}
         <div className="flex-1 overflow-y-auto p-8">
 
-          {activeTab === "stats" && (
+          <div style={{ display: activeTab === "stats" ? "block" : "none" }}>
             <Card>
               <CardHeader>
                 <CardTitle>Statistiques globales</CardTitle>
@@ -493,13 +493,13 @@ export default function AdminDashboard() {
                 <StatsAdmin />
               </CardContent>
             </Card>
-          )}
+          </div>
 
-          {activeTab === "properties" && (
+          <div style={{ display: activeTab === "properties" ? "block" : "none" }}>
             <PropertiesAdmin />
-          )}
+          </div>
 
-          {activeTab === "appointments" && (
+          <div style={{ display: activeTab === "appointments" ? "block" : "none" }}>
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-4">Rendez-vous de visite</h2>
@@ -510,13 +510,13 @@ export default function AdminDashboard() {
                 <VisitAvailabilityAdmin />
               </div>
             </div>
-          )}
+          </div>
 
-          {activeTab === "contacts" && (
+          <div style={{ display: activeTab === "contacts" ? "block" : "none" }}>
             <ContactsAdmin />
-          )}
+          </div>
 
-          {activeTab === "bookings" && (
+          <div style={{ display: activeTab === "bookings" ? "block" : "none" }}>
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-4">Demandes de réservation</h2>
@@ -527,9 +527,9 @@ export default function AdminDashboard() {
                 <SeasonalAvailabilityAdmin />
               </div>
             </div>
-          )}
+          </div>
 
-          {activeTab === "images" && (
+          <div style={{ display: activeTab === "images" ? "block" : "none" }}>
             <div className="grid gap-4">
               <Card>
                 <CardHeader>
@@ -549,9 +549,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
-          )}
+          </div>
 
-          {activeTab === "estimation" && (
+          <div style={{ display: activeTab === "estimation" ? "block" : "none" }}>
             <Card>
               <CardHeader>
                 <CardTitle>Outils IA et calculettes</CardTitle>
@@ -561,9 +561,9 @@ export default function AdminDashboard() {
                 <ToolsAdmin />
               </CardContent>
             </Card>
-          )}
+          </div>
 
-          {activeTab === "planning" && (
+          <div style={{ display: activeTab === "planning" ? "block" : "none" }}>
             <Card>
               <CardHeader>
                 <CardTitle>Planning Visites & Réservations</CardTitle>
@@ -573,9 +573,9 @@ export default function AdminDashboard() {
                 <PlanningAdmin />
               </CardContent>
             </Card>
-          )}
+          </div>
 
-          {activeTab === "settings" && (
+          <div style={{ display: activeTab === "settings" ? "block" : "none" }}>
             <div className="grid gap-4">
               <Card>
                 <CardHeader>
@@ -604,9 +604,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
-          )}
+          </div>
 
-          {activeTab === "applications" && (
+          <div style={{ display: activeTab === "applications" ? "block" : "none" }}>
             <Card>
               <CardHeader>
                 <CardTitle>Étude des dossiers de candidature</CardTitle>
@@ -616,7 +616,7 @@ export default function AdminDashboard() {
                 <StudyApplications />
               </CardContent>
             </Card>
-          )}
+          </div>
         </div>
       </div>
     </div>
