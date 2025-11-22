@@ -40,19 +40,22 @@ function Router() {
 }
 
 function App() {
+  const location = window.location.pathname;
+  const isAdminPage = location.startsWith("/admin");
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <div className="flex flex-col min-h-screen">
-            <Header />
+            {!isAdminPage && <Header />}
             <main id="main-content" className="flex-1 bg-background">
               <Router />
             </main>
           </div>
 
-          <ScrollToTop />
-          <CookieConsent />
+          {!isAdminPage && <ScrollToTop />}
+          {!isAdminPage && <CookieConsent />}
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>
