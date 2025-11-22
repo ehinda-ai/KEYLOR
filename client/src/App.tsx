@@ -17,6 +17,9 @@ import ContactPage from "@/pages/contact";
 import BaremePage from "@/pages/bareme";
 import EstimationIAPage from "@/pages/estimation-ia";
 import AdminDashboard from "@/pages/admin-dashboard";
+import PlanningGlobalPage from "@/pages/planning-global";
+import PlanningSaisonnierPage from "@/pages/planning-saisonnier";
+import PlanningVisitesPage from "@/pages/planning-visites";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,6 +36,9 @@ function Router() {
       <Route path="/proprietes/:id" component={PropertyDetailPage} />
       <Route path="/bareme" component={BaremePage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/planning-global" component={PlanningGlobalPage} />
+      <Route path="/planning-saisonnier" component={PlanningSaisonnierPage} />
+      <Route path="/planning-visites" component={PlanningVisitesPage} />
       <Route path="/admin/mon-compte" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
