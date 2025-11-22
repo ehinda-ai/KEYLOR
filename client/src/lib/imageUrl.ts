@@ -9,6 +9,11 @@
 export function resolveImageUrl(objectPath: string | null | undefined): string | null {
   if (!objectPath) return null;
   
+  // Data URLs (base64) - garder telles quelles
+  if (objectPath.startsWith('data:')) {
+    return objectPath;
+  }
+  
   // URLs absolues (Unsplash, etc.) - garder telles quelles
   if (objectPath.startsWith('http://') || objectPath.startsWith('https://')) {
     return objectPath;

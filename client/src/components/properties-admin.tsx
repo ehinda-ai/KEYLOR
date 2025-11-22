@@ -64,6 +64,7 @@ export function PropertiesAdmin() {
       ville: "",
       codePostal: "",
       localisation: "",
+      photos: [],
       featured: false,
       statut: "disponible",
       dpe: "",

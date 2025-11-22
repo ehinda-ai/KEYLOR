@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, XCircle, Clock, Download, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
@@ -81,6 +81,38 @@ export function AppointmentsAdmin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
       toast({ title: "Rendez-vous supprimé" });
+    },
+  });
+
+  const exportMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/appointments/${id}/export-ics`);
+      if (!response.ok) throw new Error("Erreur lors de l'export");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `visite-${id}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    },
+    onSuccess: () => {
+      toast({ title: "Calendrier téléchargé" });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Erreur lors de l'export", variant: "destructive" });
+    },
+  });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("POST", `/api/appointments/${id}/send-email`, {}),
+    onSuccess: () => {
+      toast({ title: "Email envoyé avec succès" });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Erreur lors de l'envoi de l'email", variant: "destructive" });
     },
   });
 
@@ -228,14 +260,34 @@ export function AppointmentsAdmin() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(apt.id)}
-                      data-testid={`button-delete-appointment-${apt.id}`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => exportMutation.mutate(apt.id)}
+                        data-testid={`button-export-${apt.id}`}
+                        disabled={exportMutation.isPending}
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => sendEmailMutation.mutate(apt.id)}
+                        data-testid={`button-email-${apt.id}`}
+                        disabled={sendEmailMutation.isPending}
+                      >
+                        <Mail className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteMutation.mutate(apt.id)}
+                        data-testid={`button-delete-appointment-${apt.id}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

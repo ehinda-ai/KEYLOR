@@ -337,6 +337,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Export appointment as iCalendar file
+  app.get("/api/appointments/:id/export-ics", async (req, res) => {
+    try {
+      const appointment = await storage.getAppointment(req.params.id);
+      if (!appointment) {
+        return res.status(404).json({ error: "Rendez-vous non trouvé" });
+      }
+
+      let property = null;
+      if (appointment.propertyId !== "general") {
+        property = await storage.getProperty(appointment.propertyId);
+      }
+
+      if (!property) {
+        property = {
+          id: "general",
+          titre: "Consultation générale",
+          ville: "À définir",
+          localisation: "",
+          codePostal: "",
+          numeroRue: "",
+        } as any;
+      }
+
+      const icsContent = generateAppointmentICalendar(appointment, property);
+      res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="visite-${appointment.id}.ics"`);
+      res.send(icsContent);
+    } catch (error) {
+      console.error("Error exporting appointment:", error);
+      res.status(500).json({ error: "Erreur lors de l'export du calendrier" });
+    }
+  });
+
+  // Send appointment calendar by email
+  app.post("/api/appointments/:id/send-email", async (req, res) => {
+    try {
+      const appointment = await storage.getAppointment(req.params.id);
+      if (!appointment) {
+        return res.status(404).json({ error: "Rendez-vous non trouvé" });
+      }
+
+      let property = null;
+      if (appointment.propertyId !== "general") {
+        property = await storage.getProperty(appointment.propertyId);
+      }
+
+      if (!property) {
+        property = {
+          id: "general",
+          titre: "Consultation générale",
+          ville: "À définir",
+          localisation: "",
+          codePostal: "",
+          numeroRue: "",
+        } as any;
+      }
+
+      const icsContent = generateAppointmentICalendar(appointment, property);
+      
+      // Envoyer l'ICS par email au client
+      const mailjet = Mailjet.apiConnect(
+        process.env.MAILJET_API_KEY || "",
+        process.env.MAILJET_SECRET_KEY || ""
+      );
+
+      await mailjet
+        .post('send', { version: 'v3.1' })
+        .request({
+          Messages: [
+            {
+              From: {
+                Email: 'contact@keylor.fr',
+                Name: 'KEYLOR - Gestion Immobilière'
+              },
+              To: [
+                {
+                  Email: appointment.email
+                }
+              ],
+              Subject: `Confirmation de visite - ${property.titre}`,
+              HTMLPart: `
+                <h2>Confirmation de votre rendez-vous de visite</h2>
+                <p>Cher ${appointment.nom},</p>
+                <p>Voici votre rendez-vous pour la visite du bien :</p>
+                <p><strong>${property.titre}</strong><br/>
+                ${property.localisation}, ${property.codePostal} ${property.ville}</p>
+                <p><strong>Date :</strong> ${appointment.date}<br/>
+                <strong>Heure :</strong> ${appointment.heure}</p>
+                <p>Le fichier iCalendar ci-joint vous permettra d'importer cet événement dans votre calendrier.</p>
+                <p>Cordialement,<br/>L'équipe KEYLOR</p>
+              `,
+              Attachments: [
+                {
+                  ContentType: 'text/calendar',
+                  Filename: `visite-${appointment.id}.ics`,
+                  Base64Content: Buffer.from(icsContent).toString('base64')
+                }
+              ]
+            }
+          ]
+        });
+
+      res.json({ success: true, message: "Email envoyé avec succès" });
+    } catch (error) {
+      console.error("Error sending appointment email:", error);
+      res.status(500).json({ error: "Erreur lors de l'envoi de l'email" });
+    }
+  });
+
   // Calculer les créneaux disponibles pour une propriété et une date
   app.get("/api/appointments/available-slots/:propertyId/:date", async (req, res) => {
     try {
