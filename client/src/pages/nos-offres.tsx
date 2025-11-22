@@ -175,7 +175,7 @@ export default function NosOffresPage() {
               onClick={() => handleTransactionTypeChange("vente")}
               data-testid="tab-vente"
             >
-              Achat
+              Acheter
             </Button>
             <Button 
               variant={transactionType === "location" ? "default" : "outline"}
@@ -183,7 +183,7 @@ export default function NosOffresPage() {
               onClick={() => handleTransactionTypeChange("location")}
               data-testid="tab-location"
             >
-              Location
+              Louer
             </Button>
             <Button 
               variant={transactionType === "location_saisonniere" ? "default" : "outline"}
@@ -191,7 +191,7 @@ export default function NosOffresPage() {
               onClick={() => handleTransactionTypeChange("location_saisonniere")}
               data-testid="tab-saisonniere"
             >
-              Location saisonnière
+              Séjourner
             </Button>
             <div className="w-px h-8 bg-border hidden md:block"></div>
             <Link href="/contact">
