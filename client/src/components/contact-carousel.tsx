@@ -8,7 +8,12 @@ export function ContactCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data: images } = useQuery<ContactCarouselImage[]>({
-    queryKey: ["/api/contact-carousel-images?active=true"],
+    queryKey: ["/api/contact-carousel-images"],
+    queryFn: async () => {
+      const res = await fetch('/api/contact-carousel-images');
+      if (!res.ok) throw new Error('Erreur');
+      return res.json();
+    }
   });
 
   const activeImages = images?.filter(img => img.actif) || [];

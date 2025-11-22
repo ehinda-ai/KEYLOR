@@ -970,10 +970,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { type, active } = req.query;
       let scales;
       
-      if (active === 'true') {
-        scales = await storage.getActivePricingScales();
-      } else if (type) {
+      // Priorité: type > active > tous (getPricingScalesByType retourne déjà les actifs)
+      if (type) {
         scales = await storage.getPricingScalesByType(type as string);
+      } else if (active === 'true') {
+        scales = await storage.getActivePricingScales();
       } else {
         scales = await storage.getAllPricingScales();
       }

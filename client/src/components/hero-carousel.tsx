@@ -8,7 +8,12 @@ export function HeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data: images } = useQuery<HeroImage[]>({
-    queryKey: ["/api/hero-images?active=true"],
+    queryKey: ["/api/hero-images"],
+    queryFn: async () => {
+      const res = await fetch('/api/hero-images');
+      if (!res.ok) throw new Error('Erreur');
+      return res.json();
+    }
   });
 
   const activeImages = images?.filter(img => img.actif) || [];
