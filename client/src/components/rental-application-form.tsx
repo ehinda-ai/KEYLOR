@@ -28,6 +28,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
   const form = useForm<any>({
     resolver: zodResolver(insertRentalApplicationSchema),
+    mode: "onChange",
     defaultValues: {
       propertyId: property.id,
       propertyTitle: property.titre,
@@ -38,10 +39,10 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       telephone: "",
       email: "",
       adresseActuelle: "",
-      situationFamiliale: "Célibataire",
-      profession: "",
-      typeContrat: "CDI",
-      entreprise: "",
+      situationFamiliale: null,
+      profession: null,
+      typeContrat: null,
+      entreprise: null,
       salaireMensuel: 0,
       allocations: 0,
       autresRevenus: 0,
@@ -59,74 +60,71 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
   });
 
   const mutation = useMutation({
-    mutationFn: (data: InsertRentalApplication) =>
-      apiRequest("POST", "/api/rental-applications", data),
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/rental-applications", data);
+      return response;
+    },
     onSuccess: () => {
       toast({
         title: "Succès",
         description: "Votre dossier a été reçu. Nous vous contacterons bientôt.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/rental-applications"] });
       form.reset();
       onOpenChange(false);
       setStep(1);
+      queryClient.invalidateQueries({ queryKey: ["/api/rental-applications"] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Error submitting application:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur s'est produite. Veuillez réessayer.",
+        description: error?.message || "Une erreur s'est produite. Veuillez réessayer.",
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = (data: any) => {
+  const onSubmit = async (formData: any) => {
     try {
-      const salary = parseFloat(data.salaireMensuel?.toString() || "0");
-      const alloc = parseFloat(data.allocations?.toString() || "0");
-      const other = parseFloat(data.autresRevenus?.toString() || "0");
+      const salary = parseFloat(formData.salaireMensuel?.toString() || "0");
+      const alloc = parseFloat(formData.allocations?.toString() || "0");
+      const other = parseFloat(formData.autresRevenus?.toString() || "0");
       const total = salary + alloc + other;
 
-      const finalData = {
-        propertyId: data.propertyId,
-        propertyTitle: data.propertyTitle,
-        monthlyRent: (parseFloat(data.monthlyRent?.toString() || "0")).toString(),
-        civilite: data.civilite || "M",
-        nom: data.nom,
-        prenom: data.prenom,
-        dateNaissance: data.dateNaissance || null,
-        lieuNaissance: data.lieuNaissance || null,
-        telephone: data.telephone,
-        email: data.email,
-        adresseActuelle: data.adresseActuelle,
-        situationFamiliale: data.situationFamiliale || null,
-        nombrePersonnesCharge: data.nombrePersonnesCharge || 0,
-        profession: data.profession || null,
-        typeContrat: data.typeContrat || null,
-        dateEmbauche: data.dateEmbauche || null,
-        entreprise: data.entreprise || null,
-        adresseEntreprise: data.adresseEntreprise || null,
+      const payload = {
+        propertyId: formData.propertyId,
+        propertyTitle: formData.propertyTitle,
+        monthlyRent: monthlyRent.toString(),
+        civilite: formData.civilite,
+        nom: formData.nom,
+        prenom: formData.prenom,
+        dateNaissance: null,
+        lieuNaissance: null,
+        telephone: formData.telephone,
+        email: formData.email,
+        adresseActuelle: formData.adresseActuelle,
+        situationFamiliale: null,
+        nombrePersonnesCharge: 0,
+        profession: null,
+        typeContrat: null,
+        dateEmbauche: null,
+        entreprise: null,
+        adresseEntreprise: null,
         salaireMensuel: salary.toString(),
         allocations: alloc.toString(),
         autresRevenus: other.toString(),
         totalRevenusMenuels: total,
-        typeGarantie: data.typeGarantie || "caution_solidaire",
-        garantieDetail: data.garantieDetail || null,
-        compositionMenage: data.compositionMenage || "1_locataire",
-        garants: (data.garants || []).filter((g: string) => g && g.trim()),
-        numeroVisale: data.numeroVisale || null,
+        typeGarantie: formData.typeGarantie || "caution_solidaire",
+        garantieDetail: null,
+        compositionMenage: formData.compositionMenage || "1_locataire",
+        garants: (formData.garants || []).filter((g: string) => g && g.trim()),
+        numeroVisale: formData.numeroVisale || null,
       };
       
-      console.log("Submitting rental application:", finalData);
-      mutation.mutate(finalData as any);
-    } catch (error) {
-      console.error("Form submission error:", error);
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la préparation du formulaire",
-        variant: "destructive",
-      });
+      console.log("Submitting with payload:", payload);
+      await mutation.mutateAsync(payload);
+    } catch (err) {
+      console.error("Form error:", err);
     }
   };
 
@@ -138,7 +136,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Étape 1: Identité */}
             {step === 1 && (
               <div className="space-y-4">
@@ -250,7 +248,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Type de contrat</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select value={field.value || ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger data-testid="select-contrat">
                             <SelectValue />
@@ -289,7 +287,14 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                     <FormItem>
                       <FormLabel>Salaire mensuel (€)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-salaire" />
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field} 
+                          value={field.value || 0}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                          data-testid="input-salaire" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -405,7 +410,14 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                     <FormItem>
                       <FormLabel>Allocations (€)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-allocations" />
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          value={field.value || 0}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                          data-testid="input-allocations" 
+                        />
                       </FormControl>
                       <p className="text-xs text-muted-foreground mt-1">Laisser à 0 si aucune allocation</p>
                       <FormMessage />
@@ -420,7 +432,14 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                     <FormItem>
                       <FormLabel>Autres revenus (€)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-autres" />
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          value={field.value || 0}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                          data-testid="input-autres" 
+                        />
                       </FormControl>
                       <p className="text-xs text-muted-foreground mt-1">Laisser à 0 si aucun revenu supplémentaire</p>
                       <FormMessage />
