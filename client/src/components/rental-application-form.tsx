@@ -4,13 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertRentalApplicationSchema, type InsertRentalApplication, type Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface RentalApplicationFormProps {
@@ -21,10 +19,8 @@ interface RentalApplicationFormProps {
 
 export function RentalApplicationForm({ property, open, onOpenChange }: RentalApplicationFormProps) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
 
-  // Retourner early si property est null
   if (!property) return null;
 
   const monthlyRent = parseFloat(property.prix.toString());
@@ -36,14 +32,21 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       propertyTitle: property.titre,
       monthlyRent: monthlyRent,
       civilite: "M",
+      nom: "",
+      prenom: "",
+      telephone: "",
+      email: "",
+      adresseActuelle: "",
       situationFamiliale: "Célibataire",
+      profession: "",
       typeContrat: "CDI",
-      typeGarantie: "caution_solidaire",
+      entreprise: "",
       salaireMensuel: 0,
       allocations: 0,
       aidesLogement: 0,
       autresRevenus: 0,
       totalRevenusMenuels: 0,
+      typeGarantie: "caution_solidaire",
     },
   });
 
@@ -53,14 +56,15 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
     onSuccess: () => {
       toast({
         title: "Succès",
-        description: "Votre dossier de candidature a été reçu. Nous vous contacterons sous peu.",
+        description: "Votre dossier a été reçu. Nous vous contacterons bientôt.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/rental-applications"] });
       form.reset();
       onOpenChange(false);
       setStep(1);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Error submitting application:", error);
       toast({
         title: "Erreur",
         description: "Une erreur s'est produite. Veuillez réessayer.",
@@ -70,7 +74,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
   });
 
   const handleSubmit = (data: any) => {
-    // Calculer le total des revenus
     const total =
       (parseFloat(data.salaireMensuel?.toString() || "0")) +
       (parseFloat(data.allocations?.toString() || "0")) +
@@ -98,7 +101,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            {/* Étape 1: Identité & Contact */}
+            {/* Étape 1: Identité */}
             {step === 1 && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Votre identité</h3>
@@ -112,7 +115,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                         <FormLabel>Civilité</FormLabel>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger data-testid="select-civilite">
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
@@ -156,48 +159,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
                 <FormField
                   control={form.control}
-                  name="dateNaissance"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date de naissance</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} data-testid="input-date-naissance" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="lieuNaissance"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lieu de naissance</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Lyon" {...field} data-testid="input-lieu-naissance" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="adresseActuelle"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Adresse actuelle</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="123 rue de la Paix, 75000 Paris" {...field} data-testid="textarea-adresse" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="telephone"
                   render={({ field }) => (
                     <FormItem>
@@ -223,77 +184,27 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="adresseActuelle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Adresse actuelle</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123 rue de la Paix" {...field} data-testid="input-adresse" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             )}
 
-            {/* Étape 2: Situation familiale & professionnelle */}
+            {/* Étape 2: Situation professionnelle */}
             {step === 2 && (
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Situation familiale</h3>
-
-                <FormField
-                  control={form.control}
-                  name="situationFamiliale"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Situation</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Célibataire">Célibataire</SelectItem>
-                          <SelectItem value="Marié">Marié(e)</SelectItem>
-                          <SelectItem value="Concubin">Concubin(e)</SelectItem>
-                          <SelectItem value="PACS">PACS</SelectItem>
-                          <SelectItem value="Séparé">Séparé(e)</SelectItem>
-                          <SelectItem value="Divorcé">Divorcé(e)</SelectItem>
-                          <SelectItem value="Veuf">Veuf(ve)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="nombrePersonnesCharge"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre de personnes à charge</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="0"
-                          {...field}
-                          value={field.value || 0}
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
-                          data-testid="input-personnes-charge"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <h3 className="font-semibold text-lg mt-6">Situation professionnelle</h3>
-
-                <FormField
-                  control={form.control}
-                  name="profession"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profession</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ingénieur" {...field} data-testid="input-profession" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <h3 className="font-semibold text-lg">Situation professionnelle</h3>
 
                 <FormField
                   control={form.control}
@@ -301,9 +212,9 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Type de contrat</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger data-testid="select-contrat">
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
@@ -311,9 +222,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                           <SelectItem value="CDI">CDI</SelectItem>
                           <SelectItem value="CDD">CDD</SelectItem>
                           <SelectItem value="Stage">Stage</SelectItem>
-                          <SelectItem value="Freelance">Freelance</SelectItem>
-                          <SelectItem value="Entrepreneur">Entrepreneur</SelectItem>
-                          <SelectItem value="Retraité">Retraité</SelectItem>
                           <SelectItem value="Autre">Autre</SelectItem>
                         </SelectContent>
                       </Select>
@@ -324,26 +232,12 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
                 <FormField
                   control={form.control}
-                  name="dateEmbauche"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date d'embauche</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} data-testid="input-date-embauche" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="entreprise"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Raison sociale (entreprise)</FormLabel>
+                      <FormLabel>Entreprise</FormLabel>
                       <FormControl>
-                        <Input placeholder="Acme Corp" {...field} data-testid="input-entreprise" />
+                        <Input placeholder="Nom entreprise" {...field} data-testid="input-entreprise" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -352,12 +246,12 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
                 <FormField
                   control={form.control}
-                  name="adresseEntreprise"
+                  name="salaireMensuel"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Adresse de l'employeur</FormLabel>
+                      <FormLabel>Salaire mensuel (€)</FormLabel>
                       <FormControl>
-                        <Input placeholder="456 avenue des Champs" {...field} data-testid="input-adresse-entreprise" />
+                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-salaire" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -366,34 +260,19 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
               </div>
             )}
 
-            {/* Étape 3: Revenus & Garanties */}
+            {/* Étape 3: Revenus */}
             {step === 3 && (
               <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Ressources mensuelles</h3>
-                <p className="text-sm text-muted-foreground">Loyer de l'annonce: <span className="font-semibold">{monthlyRent.toFixed(2)}€</span></p>
-
-                <FormField
-                  control={form.control}
-                  name="salaireMensuel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Salaire mensuel net</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="input-salaire" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <h3 className="font-semibold text-lg">Revenus totaux</h3>
 
                 <FormField
                   control={form.control}
                   name="allocations"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Allocations familiales</FormLabel>
+                      <FormLabel>Allocations (€)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="input-allocations" />
+                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-allocations" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -405,9 +284,9 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                   name="aidesLogement"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Aides au logement (APL, ALF, ALS)</FormLabel>
+                      <FormLabel>Aides logement (€)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="input-aides" />
+                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-aides" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -419,58 +298,28 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                   name="autresRevenus"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Autres revenus</FormLabel>
+                      <FormLabel>Autres revenus (€)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="input-autres-revenus" />
+                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-autres" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <h3 className="font-semibold text-lg mt-6">Garanties</h3>
-
-                <FormField
-                  control={form.control}
-                  name="typeGarantie"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type de garantie</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="caution_solidaire">Caution solidaire</SelectItem>
-                          <SelectItem value="visale">Visale</SelectItem>
-                          <SelectItem value="autre">Autre</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="garantieDetail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Détails de la garantie (optionnel)</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Nom et lien avec le candidat..." {...field} data-testid="textarea-garantie" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="p-4 bg-muted rounded">
+                  <p className="text-sm">
+                    <strong>Loyer annuel:</strong> {(monthlyRent * 12).toLocaleString("fr-FR")}€
+                  </p>
+                  <p className="text-sm">
+                    <strong>Taux d'effort:</strong> {((monthlyRent / (form.watch("salaireMensuel") + form.watch("allocations") + form.watch("aidesLogement") + form.watch("autresRevenus"))) * 100).toFixed(1)}%
+                  </p>
+                </div>
               </div>
             )}
 
-            {/* Navigation */}
-            <div className="flex justify-between gap-4">
+            {/* Buttons */}
+            <DialogFooter className="flex justify-between gap-4">
               <Button
                 type="button"
                 variant="outline"
@@ -480,25 +329,27 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
               >
                 Précédent
               </Button>
-
-              {step < 3 ? (
-                <Button
-                  type="button"
-                  onClick={() => setStep(step + 1)}
-                  data-testid="button-next"
-                >
-                  Suivant
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  disabled={mutation.isPending}
-                  data-testid="button-submit"
-                >
-                  {mutation.isPending ? "Envoi en cours..." : "Envoyer mon dossier"}
-                </Button>
-              )}
-            </div>
+              <div className="flex gap-2">
+                {step < 3 && (
+                  <Button
+                    type="button"
+                    onClick={() => setStep(step + 1)}
+                    data-testid="button-next"
+                  >
+                    Suivant
+                  </Button>
+                )}
+                {step === 3 && (
+                  <Button
+                    type="submit"
+                    disabled={mutation.isPending}
+                    data-testid="button-submit"
+                  >
+                    {mutation.isPending ? "Envoi..." : "Envoyer dossier"}
+                  </Button>
+                )}
+              </div>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>
