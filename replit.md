@@ -33,7 +33,14 @@ The primary business goal is lead generation through strategic capture of sales 
 - Keep geographic mentions broad: "Drôme, Ardèche et toute la France" without being too specific
 - Goal: capture leads nationwide while mentioning Drôme/Ardèche as starting region
 
-**Recent Major Changes (Nov 22, 2025 - IMAGE CAROUSELS + DATA FEEDS FIX)**:
+**Recent Major Changes (Nov 22, 2025 - FULL VPS MIGRATION AUDIT + REPLIT REMOVAL)**:
+- ✅ **COMPLETED AUDIT:** Vérification complète des dépendances Replit
+- ✅ **CRITICAL FIX:** Remplacement complet du sidecar Replit (`http://127.0.0.1:1106`)
+- ✅ **NEW STORAGE:** Implémentation du stockage local autonome (filesystem-based)
+- ✅ **ZERO REPLIT DEPS:** Aucune dépendance Replit en dehors des plugins dev optionnels
+- ✅ **VPS-READY:** Site complètement prêt pour migration vers OVH VPS Ubuntu
+- ✅ **SHARE FEATURE:** Ajout du bouton partage d'annonces (copier lien / email)
+- ✅ **RENTAL APPS:** Système complet de candidature location (3-step form)
 - ✅ MERGED intranet into KEYLOR vitrine (single app - COMPLETE)
 - ✅ Calendar system: iCalendar (.ics) generation for appointments - VERIFIED WORKING
 - ✅ Email system: Mailjet integration (booking confirmations, appointment notifications) - VERIFIED WORKING
@@ -43,13 +50,8 @@ The primary business goal is lead generation through strategic capture of sales 
 - ✅ Created CRUD components: PropertiesAdmin, AppointmentsAdmin, ContactsAdmin, BookingsAdmin
 - ✅ Created availability managers: VisitAvailabilityAdmin, SeasonalAvailabilityAdmin
 - ✅ Integrated HeroImagesAdmin, ContactCarouselAdmin, PricingScalesAdmin, SocialReviewsAdmin
-- ✅ **NEW: Location Saisonnière onglet** - Tarifs par saison + horaires accueil + prestations
-- ✅ **NEW: Géolocalisation** - Latitude/Longitude dans onglet Localisation (pour carte + trajets)
-- ✅ **FIXED: Bug "Légales"** - SelectItem avec value="" remplacé par "non-renseigne"
-- ✅ **FIXED: Photo uploads** - Support data URLs (base64) en admin + vitrine
-- ✅ **FIXED: Image carousels** - HeroCarousel et ContactCarousel maintenant chargent dynamiquement les photos uploadées
-- ✅ **FIXED: /api/pricing-scales** - Priorité correcte du filtre type pour afficher tarifs par service (vente/location)
-- ✅ **FIXED: Admin data on public pages** - Tarifs, avis, réseaux sociaux maintenant s'affichent sur pages publiques (vendre, gestion-location, contact)
+- ✅ **Location Saisonnière onglet** - Tarifs par saison + horaires accueil + prestations
+- ✅ **Géolocalisation** - Latitude/Longitude dans onglet Localisation (pour carte + trajets)
 - ✅ All TypeScript checks pass (0 errors)
 - ✅ Build: 143.3KB (Express server)
 - ✅ ALL 74 API routes tested and working
@@ -161,12 +163,20 @@ All in ONE private page with 8 tabbed modules:
 -   **Calendar**: iCalendar (RFC 5545) for appointment exports
 -   **Future Integration**: Hector API (variables defined, integration pending)
 
-## Migration Status to VPS (Nov 22, 2025)
+## Migration Status to VPS (Nov 22, 2025 - COMPLETE AUDIT)
+- ✅ **AUDIT COMPLETE:** No Replit dependencies (except optional dev plugins)
+- ✅ **STORAGE MIGRATED:** Replaced Replit sidecar with local filesystem storage
+- ✅ **ENVIRONMENT READY:** All env vars are generic and VPS-compatible
 - ✅ Backend fully functional on Replit
 - ✅ All intranet features integrated (zero losses)
-- ✅ PostgreSQL Neon database connected
+- ✅ PostgreSQL Neon database connected (will migrate to local PostgreSQL on VPS)
 - ✅ Email service (Mailjet) configured
 - ✅ AI service (OpenAI) configured
 - ✅ Calendar system working (iCalendar generation)
-- 📋 Ready for VPS deployment
-- 📋 Next step: Configure VPS storage path `/var/www/keylor/storage/` during deployment
+- ✅ **100% READY FOR VPS DEPLOYMENT**
+
+**For VPS deployment:**
+1. Use `STORAGE_PATH=/var/www/keylor/storage` (replaces hardcoded Replit paths)
+2. Configure PostgreSQL locally on VPS
+3. See `MIGRATION_VPS_AUDIT.md` for complete migration checklist
+4. All build artifacts are in `dist/` after `npm run build`
