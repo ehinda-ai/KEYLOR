@@ -43,7 +43,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       entreprise: "",
       salaireMensuel: 0,
       allocations: 0,
-      aidesLogement: 0,
       autresRevenus: 0,
       totalRevenusMenuels: 0,
       typeGarantie: "caution_solidaire",
@@ -77,7 +76,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
     const total =
       (parseFloat(data.salaireMensuel?.toString() || "0")) +
       (parseFloat(data.allocations?.toString() || "0")) +
-      (parseFloat(data.aidesLogement?.toString() || "0")) +
       (parseFloat(data.autresRevenus?.toString() || "0"));
 
     const finalData = {
@@ -85,7 +83,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       monthlyRent: parseFloat(data.monthlyRent?.toString() || "0"),
       salaireMensuel: parseFloat(data.salaireMensuel?.toString() || "0"),
       allocations: parseFloat(data.allocations?.toString() || "0"),
-      aidesLogement: parseFloat(data.aidesLogement?.toString() || "0"),
       autresRevenus: parseFloat(data.autresRevenus?.toString() || "0"),
       totalRevenusMenuels: total,
     };
@@ -281,20 +278,6 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
                 <FormField
                   control={form.control}
-                  name="aidesLogement"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Aides logement (€)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid="input-aides" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="autresRevenus"
                   render={({ field }) => (
                     <FormItem>
@@ -309,10 +292,13 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
 
                 <div className="p-4 bg-muted rounded">
                   <p className="text-sm">
-                    <strong>Loyer annuel:</strong> {(monthlyRent * 12).toLocaleString("fr-FR")}€
+                    <strong>Loyer mensuel:</strong> {monthlyRent.toLocaleString("fr-FR")}€
                   </p>
                   <p className="text-sm">
-                    <strong>Taux d'effort:</strong> {((monthlyRent / (form.watch("salaireMensuel") + form.watch("allocations") + form.watch("aidesLogement") + form.watch("autresRevenus"))) * 100).toFixed(1)}%
+                    <strong>Revenus totaux:</strong> {(form.watch("salaireMensuel") + form.watch("allocations") + form.watch("autresRevenus")).toLocaleString("fr-FR")}€
+                  </p>
+                  <p className="text-sm">
+                    <strong>Taux d'effort:</strong> {((form.watch("salaireMensuel") + form.watch("allocations") + form.watch("autresRevenus")) / monthlyRent).toFixed(2)}x le loyer
                   </p>
                 </div>
               </div>

@@ -471,7 +471,6 @@ export const rentalApplications = pgTable("rental_applications", {
   // Revenus (montants en euros)
   salaireMensuel: decimal("salaire_mensuel", { precision: 10, scale: 2 }).default("0"),
   allocations: decimal("allocations", { precision: 10, scale: 2 }).default("0"),
-  aidesLogement: decimal("aides_logement", { precision: 10, scale: 2 }).default("0"),
   autresRevenus: decimal("autres_revenus", { precision: 10, scale: 2 }).default("0"),
   totalRevenusMenuels: decimal("total_revenus_mensuels", { precision: 10, scale: 2 }).notNull(), // Calculé automatiquement
   
@@ -484,7 +483,7 @@ export const rentalApplications = pgTable("rental_applications", {
   scoreDetail: text("score_detail"), // JSON des critères de scoring
   
   // Solvabilité
-  tauxEffort: decimal("taux_effort", { precision: 5, scale: 2 }), // Pourcentage (loyer / revenus * 100)
+  tauxEffort: decimal("taux_effort", { precision: 5, scale: 2 }), // Multiple du loyer (revenus / loyer)
   statutSolvabilite: text("statut_solvabilite"), // "excellent", "bon", "acceptable", "risque"
   
   // Pièces jointes (en base64)

@@ -84,9 +84,9 @@ export function StudyApplications() {
 
   const getSolvencyColor = (taux: number | null | undefined) => {
     if (!taux) return "text-gray-500";
-    if (taux < 33) return "text-green-600 font-bold";
-    if (taux < 40) return "text-blue-600";
-    if (taux < 50) return "text-orange-600";
+    if (taux < 1.5) return "text-green-600 font-bold";
+    if (taux < 1.8) return "text-blue-600";
+    if (taux < 2.0) return "text-orange-600";
     return "text-red-600 font-bold";
   };
 
@@ -141,8 +141,8 @@ export function StudyApplications() {
                       </Badge>
                     </div>
                     <div className="text-center">
-                      <p className={`font-bold text-lg ${getSolvencyColor(app.tauxEffort?.toString())}`} data-testid={`text-taux-${app.id}`}>
-                        {app.tauxEffort ? `${app.tauxEffort}%` : "-"}
+                      <p className={`font-bold text-lg ${getSolvencyColor(app.tauxEffort ? parseFloat(app.tauxEffort.toString()) : null)}`} data-testid={`text-taux-${app.id}`}>
+                        {app.tauxEffort ? `${parseFloat(app.tauxEffort.toString()).toFixed(2)}x` : "-"}
                       </p>
                       <p className="text-xs text-muted-foreground">Taux d'effort</p>
                     </div>
@@ -208,8 +208,8 @@ export function StudyApplications() {
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">Taux d'effort</p>
-                  <p className={`text-3xl font-bold ${getSolvencyColor(selectedApp.tauxEffort)}`}>
-                    {selectedApp.tauxEffort ? `${selectedApp.tauxEffort.toFixed(1)}%` : "N/A"}
+                  <p className={`text-3xl font-bold ${getSolvencyColor(selectedApp.tauxEffort ? parseFloat(selectedApp.tauxEffort.toString()) : null)}`}>
+                    {selectedApp.tauxEffort ? `${parseFloat(selectedApp.tauxEffort.toString()).toFixed(2)}x le loyer` : "N/A"}
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -220,7 +220,7 @@ export function StudyApplications() {
                 </div>
               </div>
               <div className="mt-6 p-4 bg-blue-50 rounded border border-blue-200">
-                <p className="text-sm"><strong>Recommandation:</strong> Taux d'effort idéal &lt; 33%, acceptable &lt; 40%, risque ≥ 50%</p>
+                <p className="text-sm"><strong>Recommandation:</strong> Taux d'effort idéal &lt; 1.5x, acceptable &lt; 1.8x, moyen &lt; 2.0x, risque ≥ 2.0x</p>
               </div>
             </Card>
           ) : (
