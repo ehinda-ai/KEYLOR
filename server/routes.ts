@@ -1559,11 +1559,22 @@ Réponds au format JSON exact suivant:
     }
   });
 
-  // NOTE: La route GET /objects/:objectPath(*) a été SUPPRIMÉE
-  // Les images de propriétés sont maintenant servies par l'INTRANET
-  // En dev: http://localhost:5001/objects/public/*
-  // En prod: Nginx proxie /objects/public/* vers intranet.keylor.fr
-  // Le frontend utilise resolveImageUrl() pour pointer vers l'intranet
+  // Serve uploaded objects (images) - for carousel images stored locally
+  // NOTE: Images de propriétés (property photos) viennent de l'INTRANET via resolveImageUrl()
+  // Cette route sert uniquement les images locales (carrousel héros, contact, etc.)
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error retrieving object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
 
   const httpServer = createServer(app);
 
