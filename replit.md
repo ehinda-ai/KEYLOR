@@ -33,7 +33,7 @@ The primary business goal is lead generation through strategic capture of sales 
 - Keep geographic mentions broad: "Drôme, Ardèche et toute la France" without being too specific
 - Goal: capture leads nationwide while mentioning Drôme/Ardèche as starting region
 
-**Recent Major Changes (Nov 22, 2025 - FINAL INTEGRATION)**:
+**Recent Major Changes (Nov 22, 2025 - DATA RECOVERY + BUG FIXES)**:
 - ✅ MERGED intranet into KEYLOR vitrine (single app - COMPLETE)
 - ✅ Calendar system: iCalendar (.ics) generation for appointments - VERIFIED WORKING
 - ✅ Email system: Mailjet integration (booking confirmations, appointment notifications) - VERIFIED WORKING
@@ -43,12 +43,16 @@ The primary business goal is lead generation through strategic capture of sales 
 - ✅ Created CRUD components: PropertiesAdmin, AppointmentsAdmin, ContactsAdmin, BookingsAdmin
 - ✅ Created availability managers: VisitAvailabilityAdmin, SeasonalAvailabilityAdmin
 - ✅ Integrated HeroImagesAdmin, ContactCarouselAdmin, PricingScalesAdmin, SocialReviewsAdmin
+- ✅ **NEW: Location Saisonnière onglet** - Tarifs par saison + horaires accueil + prestations
+- ✅ **NEW: Géolocalisation** - Latitude/Longitude dans onglet Localisation (pour carte + trajets)
+- ✅ **FIXED: Bug "Légales"** - SelectItem avec value="" remplacé par "non-renseigne"
+- ✅ **FIXED: Photo uploads** - Support data URLs (base64) en admin + vitrine
 - ✅ All TypeScript checks pass (0 errors)
 - ✅ Build: 143.3KB (Express server)
 - ✅ ALL 74 API routes tested and working
 - ✅ Seasonal booking system with confirmation codes - WORKING
 - ✅ Appointment system with delegation support - WORKING
-- ✅ Zero data loss - all intranet features preserved
+- ✅ **ZERO DATA LOSS** - All intranet features preserved + recovered
 
 ## System Architecture
 
@@ -119,6 +123,8 @@ All in ONE private page with 8 tabbed modules:
 
 1. **Tableau de bord** - Statistics (property count, bookings, appointments)
 2. **Annonces** - Full CRUD for properties (vente, location, location saisonnière) with 80+ fields
+   - **NEW TAB: "Saisonnière"** - Tarifs par saison (basse/moyenne/haute), horaires accueil (arrivée/départ), prestations (ménage, linge, conciergerie)
+   - **NEW SECTION: "Géolocalisation"** - Latitude/Longitude pour carte et calcul trajets ⭐
 3. **Visites** - RDV management + visit time slot configuration (heures, durée visite, marge sécurité) with iCalendar export ⭐
 4. **Contacts** - View/manage contact form submissions
 5. **Réservations** - Manage seasonal booking requests (confirm/refuse/cancel with email notifications) ⭐

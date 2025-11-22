@@ -455,6 +455,40 @@ export function PropertiesAdmin() {
                         />
                       </div>
 
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Géolocalisation (pour la carte et trajets)</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="latitude"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Latitude</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 45.7640" step="0.0001" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-latitude" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="longitude"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Longitude</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 4.8357" step="0.0001" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-longitude" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Format décimal: 45.7640 (latitude), 4.8357 (longitude). Utilisé pour situer le bien sur la carte et calculer les trajets de visite.</p>
+                      </div>
+
                     </TabsContent>
 
                     {/* MENTIONS LÉGALES */}
