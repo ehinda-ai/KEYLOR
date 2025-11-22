@@ -1325,8 +1325,9 @@ export class DBStorage implements IStorage {
       createTableIfMissing: true,
     });
     
-    // Seed database if empty
-    this.seedIfEmpty();
+    // NOTE: La vitrine NE SEED PAS de données
+    // Elle lit uniquement les données créées par l'intranet
+    // Cela garantit une synchronisation automatique: vitrine + intranet = même base de données
   }
 
   private async seedIfEmpty() {
