@@ -125,19 +125,31 @@ function Bareme() {
               <div className="space-y-3 mb-6">
                 <h3 className="font-semibold text-center mb-4 text-foreground">Honoraires de vente</h3>
                 {venteScales.map((scale) => (
-                  <div key={scale.id} className="flex justify-between items-center py-2 border-b border-border last:border-0">
-                    <span className="text-sm text-foreground">
-                      {scale.trancheMax && !scale.trancheMin ? (
-                        <>Jusqu'à {formatPrice(scale.trancheMax)}</>
-                      ) : scale.trancheMin && !scale.trancheMax ? (
-                        <>Plus de {formatPrice(scale.trancheMin)}</>
-                      ) : scale.trancheMin && scale.trancheMax ? (
-                        <>{formatPrice(scale.trancheMin)} - {formatPrice(scale.trancheMax)}</>
-                      ) : 'Tous montants'}
-                    </span>
-                    <span className="font-semibold text-accent">
-                      {scale.honoraires ? formatPrice(scale.honoraires) : `${scale.tauxPourcentage}%`}
-                    </span>
+                  <div key={scale.id} className="text-xs py-2 border-b border-border last:border-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="flex-1 font-medium text-foreground">
+                        {scale.trancheMax && !scale.trancheMin ? (
+                          <>Jusqu'à {formatPrice(scale.trancheMax)}</>
+                        ) : scale.trancheMin && !scale.trancheMax ? (
+                          <>Plus de {formatPrice(scale.trancheMin)}</>
+                        ) : scale.trancheMin && scale.trancheMax ? (
+                          <>{formatPrice(scale.trancheMin)} - {formatPrice(scale.trancheMax)}</>
+                        ) : 'Tous montants'}
+                      </span>
+                      <span className="font-semibold text-accent text-right shrink-0 leading-tight">
+                        {scale.honoraires ? (
+                          <div className="flex flex-col items-end leading-[1.2]">
+                            <span className="font-bold text-sm">{formatPrice(scale.honoraires)}</span>
+                            <span className="text-xs text-muted-foreground">HT</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-end leading-[1.2]">
+                            <span className="font-bold text-sm">{scale.tauxPourcentage}%</span>
+                            <span className="text-xs text-muted-foreground">HT</span>
+                          </div>
+                        )}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
