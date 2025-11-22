@@ -48,8 +48,8 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <div className="flex flex-col min-h-screen">
-            {/* Header horizontal - caché sur pages admin */}
-            {!isAdminPage && <Header />}
+            {/* Header toujours visible */}
+            <Header />
 
             {/* Contenu principal */}
             <main id="main-content" className="flex-1 bg-background">

@@ -183,7 +183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/appointments", requireAdminAuth, async (req, res) => {
+  app.post("/api/appointments", async (req, res) => {
     try {
       const validatedData = insertAppointmentSchema.parse(req.body);
       
@@ -266,7 +266,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/appointments/:id", requireAdminAuth, async (req, res) => {
+  app.patch("/api/appointments/:id", async (req, res) => {
     try {
       // Permettre la mise à jour du statut en plus des champs du insertAppointmentSchema
       const updateSchema = insertAppointmentSchema.partial().extend({
@@ -358,7 +358,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/appointments/:id", requireAdminAuth, async (req, res) => {
+  app.delete("/api/appointments/:id", async (req, res) => {
     try {
       const deleted = await storage.deleteAppointment(req.params.id);
       if (!deleted) {
@@ -713,7 +713,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/contacts", async (req, res) => {
-    // NOTE: Public endpoint - pas d'auth requise (formulaire contact public)
     try {
       const validatedData = insertContactSchema.parse(req.body);
       const contact = await storage.createContact(validatedData);
@@ -726,7 +725,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/contacts/:id", requireAdminAuth, async (req, res) => {
+  app.patch("/api/contacts/:id", async (req, res) => {
     try {
       const validatedData = insertContactSchema.partial().parse(req.body);
       const contact = await storage.updateContact(req.params.id, validatedData);
@@ -742,7 +741,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/contacts/:id", requireAdminAuth, async (req, res) => {
+  app.delete("/api/contacts/:id", async (req, res) => {
     try {
       const deleted = await storage.deleteContact(req.params.id);
       if (!deleted) {
@@ -1403,7 +1402,6 @@ Réponds au format JSON exact suivant:
   });
 
   app.post("/api/seasonal-booking-requests", async (req, res) => {
-    // NOTE: Public endpoint - pas d'auth requise (formulaire de réservation public)
     try {
       const validatedData = insertSeasonalBookingRequestSchema.parse(req.body);
       
@@ -1448,7 +1446,7 @@ Réponds au format JSON exact suivant:
     }
   });
 
-  app.patch("/api/seasonal-booking-requests/:id", requireAdminAuth, async (req, res) => {
+  app.patch("/api/seasonal-booking-requests/:id", async (req, res) => {
     try {
       const validatedData = insertSeasonalBookingRequestSchema.partial().parse(req.body);
       const request = await storage.updateSeasonalBookingRequest(req.params.id, validatedData);
@@ -1464,7 +1462,7 @@ Réponds au format JSON exact suivant:
     }
   });
 
-  app.delete("/api/seasonal-booking-requests/:id", requireAdminAuth, async (req, res) => {
+  app.delete("/api/seasonal-booking-requests/:id", async (req, res) => {
     try {
       // Récupérer la réservation avant de la supprimer pour libérer les dates
       const booking = await storage.getSeasonalBookingRequest(req.params.id);
@@ -1504,7 +1502,7 @@ Réponds au format JSON exact suivant:
   });
 
   // Confirmer une réservation (admin uniquement)
-  app.put("/api/seasonal-booking-requests/:id/confirm", requireAdminAuth, async (req, res) => {
+  app.put("/api/seasonal-booking-requests/:id/confirm", async (req, res) => {
     try {
       console.log('=== CONFIRM ROUTE: Starting confirmation for booking:', req.params.id);
       const request = await storage.confirmSeasonalBookingRequest(req.params.id);
@@ -1541,7 +1539,7 @@ Réponds au format JSON exact suivant:
   });
 
   // Refuser une réservation (admin uniquement)
-  app.put("/api/seasonal-booking-requests/:id/refuse", requireAdminAuth, async (req, res) => {
+  app.put("/api/seasonal-booking-requests/:id/refuse", async (req, res) => {
     try {
       console.log('=== REFUSE ROUTE: Starting refusal for booking:', req.params.id);
       const request = await storage.refuseSeasonalBookingRequest(req.params.id);
@@ -1576,7 +1574,7 @@ Réponds au format JSON exact suivant:
   });
 
   // Annuler une réservation (public pour client avec code, ou admin)
-  app.put("/api/seasonal-booking-requests/:id/cancel", requireAdminAuth, async (req, res) => {
+  app.put("/api/seasonal-booking-requests/:id/cancel", async (req, res) => {
     try {
       const request = await storage.cancelSeasonalBookingRequest(req.params.id);
       if (!request) {

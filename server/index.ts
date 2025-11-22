@@ -1,10 +1,29 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Configuration des sessions avec MemoryStore
+const Store = MemoryStore(session);
+app.use(
+  session({
+    store: new Store({ checkPeriod: 86400000 }),
+    secret: process.env.SESSION_SECRET || "keylor_admin_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 heures
+    },
+  })
+);
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 
 app.use((req, res, next) => {
   const start = Date.now();

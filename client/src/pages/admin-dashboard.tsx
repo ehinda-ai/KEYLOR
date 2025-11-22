@@ -98,13 +98,21 @@ export default function AdminDashboard() {
     // Vérifier si authentifié (via session)
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/admin/check-auth");
-        setIsAuthenticated(response.ok);
+        const response = await fetch("/api/admin/check-auth", { credentials: "include" });
+        if (response.status === 401) {
+          setIsAuthenticated(false);
+          return;
+        }
+        const data = await response.json();
+        setIsAuthenticated(data.authenticated === true);
       } catch {
         setIsAuthenticated(false);
       }
     };
     checkAuth();
+    // Vérifier l'auth toutes les 30 secondes
+    const interval = setInterval(checkAuth, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -113,12 +121,16 @@ export default function AdminDashboard() {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ password }),
       });
       if (response.ok) {
         setIsAuthenticated(true);
         setShowLoginForm(false);
         setPassword("");
+      } else {
+        const error = await response.json();
+        console.error("Login failed:", error.error);
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -127,9 +139,13 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/admin/logout", { method: "POST" });
+      await fetch("/api/admin/logout", { 
+        method: "POST",
+        credentials: "include"
+      });
       setIsAuthenticated(false);
-      navigate("/");
+      // Attendre un peu puis rediriger
+      setTimeout(() => navigate("/"), 500);
     } catch (error) {
       console.error("Logout failed:", error);
     }
