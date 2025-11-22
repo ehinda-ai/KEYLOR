@@ -14,6 +14,7 @@ export function Header() {
     { name: "Vendre", href: "/vendre" },
     { name: "Faire gérer", href: "/gestion-location" },
     { name: "Nos offres", href: "/nos-offres" },
+    { name: "Estimateur IA", href: "/estimation-ia" },
     { name: "Barème", href: "/bareme" },
     { name: "Rendez-vous", href: "/rendez-vous" },
     { name: "Contact", href: "/contact" },
