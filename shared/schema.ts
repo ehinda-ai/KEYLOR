@@ -524,7 +524,7 @@ export const insertRentalApplicationSchema = createInsertSchema(rentalApplicatio
   telephone: z.string().min(10, "Téléphone invalide"),
   nom: z.string().min(2, "Nom requis"),
   prenom: z.string().min(2, "Prénom requis"),
-  salaireMensuel: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val),
+  salaireMensuel: z.coerce.number().min(1, "Salaire requis").max(999999),
   
   // Tous les autres champs optionnels
   civilite: z.string().optional(),
@@ -532,20 +532,20 @@ export const insertRentalApplicationSchema = createInsertSchema(rentalApplicatio
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
   situationFamiliale: z.string().optional(),
-  nombrePersonnesCharge: z.number().optional(),
+  nombrePersonnesCharge: z.coerce.number().optional(),
   profession: z.string().optional(),
   typeContrat: z.string().optional(),
   dateEmbauche: z.string().optional(),
   entreprise: z.string().optional(),
   adresseEntreprise: z.string().optional(),
-  allocations: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val).optional().default(0),
-  autresRevenus: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val).optional().default(0),
+  allocations: z.coerce.number().optional().default(0),
+  autresRevenus: z.coerce.number().optional().default(0),
   compositionMenage: z.string().optional(),
   typeGarantie: z.string().optional(),
   garantieDetail: z.string().optional(),
   garants: z.array(z.string()).optional().default([]),
   numeroVisale: z.string().optional(),
-  totalRevenusMenuels: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val),
+  totalRevenusMenuels: z.coerce.number(),
 });
 
 export type InsertRentalApplication = z.infer<typeof insertRentalApplicationSchema>;
