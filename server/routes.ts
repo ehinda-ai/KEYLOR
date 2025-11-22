@@ -24,8 +24,44 @@ import { calculateTravelTime, formatPropertyAddress } from "./routing";
 import { generateAppointmentICalendar } from "./calendar";
 import Mailjet from 'node-mailjet';
 
+// Middleware pour vérifier l'authentification admin
+function requireAdminAuth(req: any, res: any, next: any) {
+  if (req.session?.isAdminAuthenticated) {
+    return next();
+  }
+  return res.status(401).json({ error: "Non authentifié" });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+  // Routes d'authentification admin
+  app.post("/api/admin/login", async (req: any, res) => {
+    try {
+      const { password } = req.body;
+      const adminPassword = process.env.ADMIN_PASSWORD || "keylor2024";
+      
+      if (password === adminPassword) {
+        req.session.isAdminAuthenticated = true;
+        return res.json({ success: true });
+      }
+      return res.status(401).json({ error: "Mot de passe incorrect" });
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de l'authentification" });
+    }
+  });
+
+  app.post("/api/admin/logout", async (req: any, res) => {
+    try {
+      req.session.isAdminAuthenticated = false;
+      return res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la déconnexion" });
+    }
+  });
+
+  app.get("/api/admin/check-auth", async (req: any, res) => {
+    return res.json({ authenticated: req.session?.isAdminAuthenticated || false });
+  });
+
   app.get("/api/properties", async (req, res) => {
     try {
       const properties = await storage.getAllProperties();

@@ -16,6 +16,7 @@ import PropertyDetailPage from "@/pages/property-detail";
 import ContactPage from "@/pages/contact";
 import BaremePage from "@/pages/bareme";
 import EstimationIAPage from "@/pages/estimation-ia";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,19 +33,23 @@ function Router() {
       <Route path="/proprietes/:id" component={PropertyDetailPage} />
       <Route path="/bareme" component={BaremePage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/admin/mon-compte" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
 function App() {
+  const location = window.location.pathname;
+  const isAdminPage = location.startsWith("/admin");
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <div className="flex flex-col min-h-screen">
-            {/* Header horizontal */}
-            <Header />
+            {/* Header horizontal - caché sur pages admin */}
+            {!isAdminPage && <Header />}
 
             {/* Contenu principal */}
             <main id="main-content" className="flex-1 bg-background">
@@ -52,8 +57,8 @@ function App() {
             </main>
           </div>
 
-          <ScrollToTop />
-          <CookieConsent />
+          {!isAdminPage && <ScrollToTop />}
+          {!isAdminPage && <CookieConsent />}
           <Toaster />
         </TooltipProvider>
       </ThemeProvider>
