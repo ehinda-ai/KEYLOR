@@ -177,6 +177,14 @@ export default function AdminDashboard() {
             >
               Accéder à mon compte
             </button>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md font-medium hover:bg-gray-300 transition"
+              data-testid="button-admin-back-home"
+            >
+              ← Retour à l'accueil
+            </button>
           </form>
         </div>
       </div>
