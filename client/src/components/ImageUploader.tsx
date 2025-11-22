@@ -118,11 +118,11 @@ export function ImageUploader({
       )}
 
       {preview && (
-        <div className="relative w-full max-w-sm rounded-lg overflow-hidden border" data-testid="image-preview">
+        <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border bg-muted" data-testid="image-preview">
           <img
             src={preview}
             alt="Preview"
-            className="w-full h-auto max-h-48 object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       )}

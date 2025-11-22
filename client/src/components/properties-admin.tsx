@@ -388,8 +388,8 @@ export function PropertiesAdmin() {
                                 {field.value && field.value.length > 0 && (
                                   <div className="grid grid-cols-3 gap-2">
                                     {field.value.map((photo, idx) => (
-                                      <div key={idx} className="relative group">
-                                        <img src={photo.startsWith('data:') ? photo : photo} alt={`Photo ${idx}`} className="w-full h-24 object-cover rounded border" />
+                                      <div key={idx} className="relative group aspect-square overflow-hidden rounded border bg-muted">
+                                        <img src={photo.startsWith('data:') ? photo : photo} alt={`Photo ${idx}`} className="w-full h-full object-cover" />
                                         <Button
                                           type="button"
                                           variant="destructive"
