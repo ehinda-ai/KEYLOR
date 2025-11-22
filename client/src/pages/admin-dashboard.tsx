@@ -3,8 +3,9 @@ import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { LogOut, Building2, Calendar, Mail, Images, BarChart3, DollarSign, Users, Settings } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Composants admin existants
 import { HeroImagesAdmin } from "@/components/hero-images-admin";
@@ -84,6 +85,70 @@ const StatsAdmin = () => {
             <div className="text-2xl font-bold">{(appointments as any[])?.length || 0}</div>
           </CardContent>
         </Card>
+      </div>
+    </div>
+  );
+};
+
+const ConfigAdmin = () => {
+  const { toast } = useToast();
+  const [minimumValue, setMinimumValue] = useState("");
+  
+  const { data: configData } = useQuery<{ minimum: number }>({
+    queryKey: ["/api/config/minimum-sale-fee"],
+    queryFn: async () => {
+      const res = await fetch("/api/config/minimum-sale-fee");
+      if (!res.ok) throw new Error("Erreur");
+      return res.json();
+    },
+  });
+
+  useEffect(() => {
+    if (configData?.minimum) {
+      setMinimumValue(configData.minimum.toString());
+    }
+  }, [configData]);
+
+  const updateMutation = useMutation({
+    mutationFn: async (value: number) => {
+      const res = await fetch("/api/config/minimum-sale-fee", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ minimum: value }),
+      });
+      if (!res.ok) throw new Error("Erreur");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Configuration mise à jour" });
+    },
+  });
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Configuration générale</h3>
+      <div className="border rounded-lg p-4 space-y-3">
+        <label className="block text-sm font-medium">Montant minimum pour honoraires de vente (€)</label>
+        <div className="flex gap-2">
+          <input
+            type="number"
+            value={minimumValue}
+            onChange={(e) => setMinimumValue(e.target.value)}
+            className="flex-1 px-3 py-2 border rounded text-sm"
+            placeholder="4500"
+            data-testid="input-minimum-fee"
+          />
+          <Button
+            onClick={() => updateMutation.mutate(parseInt(minimumValue) || 4500)}
+            disabled={updateMutation.isPending}
+            size="sm"
+            data-testid="button-save-minimum"
+          >
+            {updateMutation.isPending ? "Sauvegarde..." : "Enregistrer"}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">Valeur actuelle: {configData?.minimum || 4500} €</p>
       </div>
     </div>
   );
@@ -335,6 +400,15 @@ export default function AdminDashboard() {
 
           <TabsContent value="settings" className="space-y-4">
             <div className="grid gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Paramètres généraux</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ConfigAdmin />
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Barèmes et tarifs</CardTitle>

@@ -519,3 +519,21 @@ export const insertRentalApplicationSchema = createInsertSchema(rentalApplicatio
 
 export type InsertRentalApplication = z.infer<typeof insertRentalApplicationSchema>;
 export type RentalApplication = typeof rentalApplications.$inferSelect;
+
+// Settings globales
+export const settings = pgTable("settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  key: varchar("key").unique().notNull(), // "minimum_vente_fee", etc.
+  value: text("value"), // Stocké en string, à parser au besoin
+  type: varchar("type").default("text"), // "text", "number", "currency"
+  description: text("description"),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertSettingSchema = createInsertSchema(settings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertSetting = z.infer<typeof insertSettingSchema>;
+export type Setting = typeof settings.$inferSelect;

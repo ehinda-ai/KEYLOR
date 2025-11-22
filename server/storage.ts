@@ -29,6 +29,8 @@ import {
   type InsertSeasonalAvailability,
   type RentalApplication,
   type InsertRentalApplication,
+  type Setting,
+  type InsertSetting,
   properties,
   appointments,
   contacts,
@@ -44,6 +46,7 @@ import {
   seasonalBookingRequests,
   seasonalAvailability,
   rentalApplications,
+  settings,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import session from "express-session";
@@ -160,6 +163,9 @@ export interface IStorage {
   createRentalApplication(app: InsertRentalApplication): Promise<RentalApplication>;
   updateRentalApplication(id: string, app: Partial<InsertRentalApplication & { score?: number; scoreDetail?: string; tauxEffort?: number; statutSolvabilite?: string }>): Promise<RentalApplication | undefined>;
   deleteRentalApplication(id: string): Promise<boolean>;
+
+  getSetting(key: string): Promise<Setting | undefined>;
+  updateSetting(key: string, value: string): Promise<Setting>;
 }
 
 const MemoryStore = createMemoryStore(session);
@@ -1328,6 +1334,14 @@ export class MemStorage implements IStorage {
   async deleteSeasonalAvailability(id: string): Promise<boolean> {
     return this.seasonalAvailabilitiesMap.delete(id);
   }
+
+  async getSetting(key: string): Promise<any> {
+    return undefined;
+  }
+
+  async updateSetting(key: string, value: string): Promise<any> {
+    return { key, value };
+  }
 }
 
 // Classe DBStorage utilisant PostgreSQL avec Drizzle ORM
@@ -1933,6 +1947,14 @@ export class DBStorage implements IStorage {
   async deleteRentalApplication(id: string): Promise<boolean> {
     const result = await this.db.delete(rentalApplications).where(eq(rentalApplications.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getSetting(key: string): Promise<any> {
+    return undefined;
+  }
+
+  async updateSetting(key: string, value: string): Promise<any> {
+    return { key, value };
   }
 }
 

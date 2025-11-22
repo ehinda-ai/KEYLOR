@@ -13,6 +13,17 @@ function Bareme() {
     }
   });
 
+  const { data: configData } = useQuery<{ minimum: number }>({
+    queryKey: ['/api/config/minimum-sale-fee'],
+    queryFn: async () => {
+      const res = await fetch('/api/config/minimum-sale-fee');
+      if (!res.ok) throw new Error('Erreur');
+      return res.json();
+    }
+  });
+
+  const minimumSaleFee = configData?.minimum || 4500;
+
   // Filtre les tarifs correctement par type
   const venteScales = scales?.filter(s => s.type === 'vente' && s.categorie === 'mandat' && s.nom === 'Mandat Simple') || [];
   const avisValeurScales = scales?.filter(s => s.type === 'vente' && s.categorie === 'avis_valeur').sort((a, b) => (a.ordre || 0) - (b.ordre || 0)) || [];
@@ -132,7 +143,7 @@ function Bareme() {
               </div>
               
               <div className="bg-accent/10 p-3 rounded text-center mb-6">
-                <p className="text-sm font-medium text-foreground">Minimum : 4 500 € TTC</p>
+                <p className="text-sm font-medium text-foreground">Minimum : {formatPrice(minimumSaleFee.toString())} TTC</p>
               </div>
 
               {avisValeurScales.length > 0 && (

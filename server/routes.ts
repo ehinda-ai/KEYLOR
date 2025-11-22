@@ -25,6 +25,9 @@ import { calculateTravelTime, formatPropertyAddress } from "./routing";
 import { generateAppointmentICalendar } from "./calendar";
 import Mailjet from 'node-mailjet';
 
+// Configuration globale (en mémoire)
+let minimumSaleFee = 4500;
+
 // Middleware pour vérifier l'authentification admin
 function requireAdminAuth(req: any, res: any, next: any) {
   if (req.session?.isAdminAuthenticated) {
@@ -1886,6 +1889,25 @@ Réponds au format JSON exact suivant:
     } catch (error) {
       console.error("Error getting upload URL:", error);
       res.status(500).json({ error: "Erreur lors de la génération de l'URL d'upload" });
+    }
+  });
+
+  // Configuration API - Minimum sale fee
+  app.get("/api/config/minimum-sale-fee", async (req, res) => {
+    res.json({ minimum: minimumSaleFee });
+  });
+
+  app.patch("/api/config/minimum-sale-fee", requireAdminAuth, async (req, res) => {
+    try {
+      const { minimum } = req.body;
+      if (typeof minimum === "number" && minimum > 0) {
+        minimumSaleFee = minimum;
+        res.json({ minimum: minimumSaleFee });
+      } else {
+        res.status(400).json({ error: "Montant invalide" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Erreur" });
     }
   });
 
