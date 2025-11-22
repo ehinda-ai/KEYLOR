@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, Edit, MapPin, Euro } from "lucide-react";
+import { Plus, Trash2, Edit, MapPin, Euro, Copy, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -130,6 +130,29 @@ export function PropertiesAdmin() {
     },
   });
 
+  const duplicateMutation = useMutation({
+    mutationFn: async (property: Property) => {
+      const { id, createdAt, ...rest } = property;
+      const newProperty = {
+        ...rest,
+        titre: `${rest.titre} (copie)`,
+      };
+      const response = await apiRequest("POST", "/api/properties", newProperty);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
+      toast({ title: "Propriété dupliquée avec succès" });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Erreur lors de la duplication",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEdit = (property: Property) => {
     setEditingProperty(property);
     form.reset({
@@ -147,6 +170,23 @@ export function PropertiesAdmin() {
       });
     } else {
       await createMutation.mutateAsync(data);
+    }
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newPhotos = form.getValues("photos") || [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        newPhotos.push(dataUrl);
+        form.setValue("photos", newPhotos);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -319,6 +359,49 @@ export function PropertiesAdmin() {
                               <Checkbox checked={!!field.value} onCheckedChange={field.onChange} />
                             </FormControl>
                             <FormLabel>Mettre en avant</FormLabel>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="photos"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Photos</FormLabel>
+                            <FormControl>
+                              <div className="space-y-2">
+                                <Input
+                                  type="file"
+                                  multiple
+                                  accept="image/*"
+                                  onChange={handlePhotoUpload}
+                                  data-testid="input-photos"
+                                />
+                                {field.value && field.value.length > 0 && (
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {field.value.map((photo, idx) => (
+                                      <div key={idx} className="relative group">
+                                        <img src={photo.startsWith('data:') ? photo : photo} alt={`Photo ${idx}`} className="w-full h-24 object-cover rounded border" />
+                                        <Button
+                                          type="button"
+                                          variant="destructive"
+                                          size="sm"
+                                          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100"
+                                          onClick={() => {
+                                            const newPhotos = (field.value || []).filter((_, i) => i !== idx);
+                                            field.onChange(newPhotos);
+                                          }}
+                                        >
+                                          X
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -552,6 +635,14 @@ export function PropertiesAdmin() {
                         data-testid={`btn-edit-${property.id}`}
                       >
                         <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => duplicateMutation.mutate(property)}
+                        data-testid={`btn-duplicate-${property.id}`}
+                      >
+                        <Copy className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="destructive"
