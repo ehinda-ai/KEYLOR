@@ -189,7 +189,7 @@ function Bareme() {
                 <h3 className="font-semibold text-center mb-4 text-foreground">Honoraires de gestion</h3>
                 {locationScales.map((scale) => (
                   <div key={scale.id} className="text-center p-3 rounded-lg bg-accent/10 border border-accent/30">
-                    <div className="text-2xl font-bold text-accent mb-1">
+                    <div className="text-lg font-bold text-accent mb-1">
                       {scale.tauxPourcentage}%
                     </div>
                     <div className="text-xs font-medium text-foreground">{scale.nom}</div>
@@ -361,7 +361,7 @@ function Bareme() {
           <Card className="border-primary/30 border hover-elevate">
             <CardHeader className="text-center bg-primary/5 border-b border-primary/20 pb-4">
               <Building2 className="h-10 w-10 text-accent mx-auto mb-3" />
-              <CardTitle className="text-base font-serif text-primary whitespace-nowrap">COMMERCES & ANNEXES</CardTitle>
+              <CardTitle className="text-lg font-serif text-primary whitespace-nowrap">COMMERCES & ANNEXES</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
@@ -378,14 +378,14 @@ function Bareme() {
                           {commercial.filter(s => s.factureA === 'proprietaire').map((scale) => (
                             <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
-                                <span className="flex-1 font-medium break-words">{scale.nom}</span>
-                                <span className="font-semibold text-accent text-right text-[10px] shrink-0 leading-tight">
+                                <span className="flex-1 font-medium break-words text-xs">{scale.nom}</span>
+                                <span className="font-semibold text-accent text-right text-xs shrink-0 leading-tight">
                                   {scale.tauxPourcentage 
                                     ? (
                                       <div className="flex flex-col items-end leading-[1.2]">
-                                        <span className="font-bold">{scale.tauxPourcentage}%</span>
-                                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">loyer annuel</span>
-                                        <span className="text-[9px] text-muted-foreground">HC</span>
+                                        <span className="font-bold text-sm">{scale.tauxPourcentage}%</span>
+                                        <span className="text-xs text-muted-foreground whitespace-nowrap">loyer annuel</span>
+                                        <span className="text-xs text-muted-foreground">HC</span>
                                       </div>
                                     )
                                     : scale.honoraires 
@@ -413,14 +413,14 @@ function Bareme() {
                           {commercial.filter(s => s.factureA === 'locataire').map((scale) => (
                             <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
-                                <span className="flex-1 font-medium break-words">{scale.nom}</span>
-                                <span className="font-semibold text-accent text-right text-[10px] shrink-0 leading-tight">
+                                <span className="flex-1 font-medium break-words text-xs">{scale.nom}</span>
+                                <span className="font-semibold text-accent text-right text-xs shrink-0 leading-tight">
                                   {scale.tauxPourcentage 
                                     ? (
                                       <div className="flex flex-col items-end leading-[1.2]">
-                                        <span className="font-bold">{scale.tauxPourcentage}%</span>
-                                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">loyer annuel</span>
-                                        <span className="text-[9px] text-muted-foreground">HC</span>
+                                        <span className="font-bold text-sm">{scale.tauxPourcentage}%</span>
+                                        <span className="text-xs text-muted-foreground whitespace-nowrap">loyer annuel</span>
+                                        <span className="text-xs text-muted-foreground">HC</span>
                                       </div>
                                     )
                                     : scale.honoraires 
@@ -448,14 +448,14 @@ function Bareme() {
                           {commercial.filter(s => s.factureA === 'les_deux').map((scale) => (
                             <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
-                                <span className="flex-1 font-medium break-words">{scale.nom}</span>
-                                <span className="font-semibold text-accent text-right text-[10px] shrink-0 leading-tight">
+                                <span className="flex-1 font-medium break-words text-xs">{scale.nom}</span>
+                                <span className="font-semibold text-accent text-right text-xs shrink-0 leading-tight">
                                   {scale.tauxPourcentage 
                                     ? (
                                       <div className="flex flex-col items-end leading-[1.2]">
-                                        <span className="font-bold">{scale.tauxPourcentage}%</span>
-                                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">loyer annuel</span>
-                                        <span className="text-[9px] text-muted-foreground">HC</span>
+                                        <span className="font-bold text-sm">{scale.tauxPourcentage}%</span>
+                                        <span className="text-xs text-muted-foreground whitespace-nowrap">loyer annuel</span>
+                                        <span className="text-xs text-muted-foreground">HC</span>
                                       </div>
                                     )
                                     : scale.honoraires 
