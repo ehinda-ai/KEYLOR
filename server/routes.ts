@@ -19,6 +19,8 @@ import {
   insertSeasonalAvailabilitySchema,
   insertRentalApplicationSchema,
   insertSitePdfSchema,
+  insertQuotationTemplateSchema,
+  insertQuotationTemplateItemSchema,
 } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { sendBookingRequestEmail, sendBookingConfirmationEmail, sendBookingRefusalEmail, sendBookingCancellationEmail, sendAppointmentConfirmationEmails, sendAppointmentAdminConfirmationEmail, sendAppointmentCancellationEmail } from "./email";
@@ -1985,6 +1987,51 @@ Réponds au format JSON exact suivant:
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Erreur lors de la suppression du PDF" });
+    }
+  });
+
+  // Quotation Templates Routes
+  app.get("/api/quotation-templates", async (req, res) => {
+    try {
+      const templates = await storage.getAllQuotationTemplates();
+      res.json(templates);
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la récupération des modèles" });
+    }
+  });
+
+  app.post("/api/quotation-templates", requireAdminAuth, async (req, res) => {
+    try {
+      const validatedData = insertQuotationTemplateSchema.parse(req.body);
+      const template = await storage.createQuotationTemplate(validatedData);
+      
+      if (req.body.items && Array.isArray(req.body.items)) {
+        for (const item of req.body.items) {
+          await storage.createQuotationTemplateItem({
+            ...insertQuotationTemplateItemSchema.parse(item),
+            templateId: template.id,
+          });
+        }
+      }
+      
+      res.status(201).json(template);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Erreur lors de la création du modèle" });
+    }
+  });
+
+  app.delete("/api/quotation-templates/:id", requireAdminAuth, async (req, res) => {
+    try {
+      const deleted = await storage.deleteQuotationTemplate(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Modèle non trouvé" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Erreur lors de la suppression du modèle" });
     }
   });
 

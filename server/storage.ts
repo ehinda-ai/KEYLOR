@@ -33,6 +33,10 @@ import {
   type InsertSetting,
   type SitePdf,
   type InsertSitePdf,
+  type QuotationTemplate,
+  type InsertQuotationTemplate,
+  type QuotationTemplateItem,
+  type InsertQuotationTemplateItem,
   properties,
   appointments,
   contacts,
@@ -50,6 +54,8 @@ import {
   rentalApplications,
   settings,
   sitePdfs,
+  quotationTemplates,
+  quotationTemplateItems,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import session from "express-session";
@@ -176,6 +182,14 @@ export interface IStorage {
   createSitePdf(pdf: InsertSitePdf): Promise<SitePdf>;
   updateSitePdf(id: string, pdf: Partial<InsertSitePdf>): Promise<SitePdf | undefined>;
   deleteSitePdf(id: string): Promise<boolean>;
+
+  getQuotationTemplate(id: string): Promise<QuotationTemplate | undefined>;
+  getAllQuotationTemplates(): Promise<QuotationTemplate[]>;
+  createQuotationTemplate(template: InsertQuotationTemplate): Promise<QuotationTemplate>;
+  deleteQuotationTemplate(id: string): Promise<boolean>;
+
+  getQuotationTemplateItems(templateId: string): Promise<QuotationTemplateItem[]>;
+  createQuotationTemplateItem(item: InsertQuotationTemplateItem): Promise<QuotationTemplateItem>;
 }
 
 const MemoryStore = createMemoryStore(session);
@@ -1986,6 +2000,35 @@ export class DBStorage implements IStorage {
   async deleteSitePdf(id: string): Promise<boolean> {
     const result = await this.db.delete(sitePdfs).where(eq(sitePdfs.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getQuotationTemplate(id: string): Promise<QuotationTemplate | undefined> {
+    const result = await this.db.select().from(quotationTemplates).where(eq(quotationTemplates.id, id));
+    return result[0];
+  }
+
+  async getAllQuotationTemplates(): Promise<QuotationTemplate[]> {
+    return await this.db.select().from(quotationTemplates).orderBy(quotationTemplates.ordre);
+  }
+
+  async createQuotationTemplate(template: InsertQuotationTemplate): Promise<QuotationTemplate> {
+    const result = await this.db.insert(quotationTemplates).values(template).returning();
+    return result[0];
+  }
+
+  async deleteQuotationTemplate(id: string): Promise<boolean> {
+    await this.db.delete(quotationTemplateItems).where(eq(quotationTemplateItems.templateId, id));
+    const result = await this.db.delete(quotationTemplates).where(eq(quotationTemplates.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getQuotationTemplateItems(templateId: string): Promise<QuotationTemplateItem[]> {
+    return await this.db.select().from(quotationTemplateItems).where(eq(quotationTemplateItems.templateId, templateId)).orderBy(quotationTemplateItems.ordre);
+  }
+
+  async createQuotationTemplateItem(item: InsertQuotationTemplateItem): Promise<QuotationTemplateItem> {
+    const result = await this.db.insert(quotationTemplateItems).values(item).returning();
+    return result[0];
   }
 
   async getSetting(key: string): Promise<any> {
