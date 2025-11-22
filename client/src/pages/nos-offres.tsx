@@ -421,52 +421,26 @@ export default function NosOffresPage() {
               <h2 className="font-serif text-2xl">
                 {filteredProperties.length} bien{filteredProperties.length > 1 ? 's' : ''} disponible{filteredProperties.length > 1 ? 's' : ''}
               </h2>
-              <div className="flex items-center gap-3">
-                {transactionType === "location_saisonniere" && (
-                  <div className="flex gap-1 border border-border rounded-md p-1">
-                    <Button
-                      variant={viewMode === "carte" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("carte")}
-                      data-testid="button-view-carte"
-                    >
-                      <Map className="h-4 w-4 mr-1" />
-                      Carte
-                    </Button>
-                    <Button
-                      variant={viewMode === "liste" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("liste")}
-                      data-testid="button-view-liste"
-                    >
-                      <SlidersHorizontal className="h-4 w-4 mr-1" />
-                      Liste
-                    </Button>
-                  </div>
-                )}
-                <Badge variant="secondary">
-                  {transactionType === "vente" ? "Vente" : transactionType === "location" ? "Location" : "Location saisonnière"}
-                </Badge>
-              </div>
+              <Badge variant="secondary">
+                {transactionType === "vente" ? "Vente" : transactionType === "location" ? "Location" : "Location saisonnière"}
+              </Badge>
             </div>
 
             {isLoading ? (
-              transactionType === "location_saisonniere" && viewMode === "carte" ? (
-                <Card className="h-[350px] animate-pulse bg-muted" />
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {[1, 2, 3].map((i) => (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="h-[400px] animate-pulse bg-muted" />
+                <div className="grid grid-cols-1 gap-6">
+                  {[1, 2].map((i) => (
                     <Card key={i} className="animate-pulse">
-                      <div className="h-64 bg-muted" />
-                      <div className="p-6 space-y-4">
-                        <div className="h-6 bg-muted rounded w-3/4" />
-                        <div className="h-4 bg-muted rounded w-1/2" />
-                        <div className="h-4 bg-muted rounded w-full" />
+                      <div className="h-40 bg-muted" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-muted rounded w-3/4" />
+                        <div className="h-3 bg-muted rounded w-1/2" />
                       </div>
                     </Card>
                   ))}
                 </div>
-              )
+              </div>
             ) : filteredProperties.length === 0 ? (
               <Card className="p-12 text-center">
                 <p className="text-muted-foreground">
@@ -481,9 +455,28 @@ export default function NosOffresPage() {
                   Réinitialiser les filtres
                 </Button>
               </Card>
-            ) : transactionType === "location_saisonniere" && viewMode === "carte" ? (
-              <div className="h-[350px]">
-                <PropertyMap properties={filteredProperties} />
+            ) : transactionType === "location_saisonniere" ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-1">
+                  <div className="h-[400px] sticky top-24">
+                    <PropertyMap properties={filteredProperties} />
+                  </div>
+                </div>
+                <div className="lg:col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredProperties.map((property) => (
+                      <div key={property.id}>
+                        <PropertyCard 
+                          property={property}
+                          searchDates={{
+                            checkIn: filters.checkIn,
+                            checkOut: filters.checkOut
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -491,10 +484,6 @@ export default function NosOffresPage() {
                   <div key={property.id}>
                     <PropertyCard 
                       property={property}
-                      searchDates={transactionType === "location_saisonniere" ? {
-                        checkIn: filters.checkIn,
-                        checkOut: filters.checkOut
-                      } : undefined}
                     />
                   </div>
                 ))}
