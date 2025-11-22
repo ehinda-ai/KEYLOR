@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { LogOut, Building2, Calendar, Mail, Images, BarChart3, DollarSign, Users, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -44,7 +45,7 @@ const ToolsAdmin = () => (
   </div>
 );
 
-const StatsAdmin = () => {
+const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
   const { data: properties = [] } = useQuery({
     queryKey: ["/api/properties"],
   }) as any;
@@ -57,32 +58,202 @@ const StatsAdmin = () => {
     queryKey: ["/api/appointments"],
   }) as any;
 
+  const { data: contacts = [] } = useQuery({
+    queryKey: ["/api/contacts"],
+  }) as any;
+
+  // Stats
+  const saleProperties = (properties as any[])?.filter(p => p.transactionType === "vente").length || 0;
+  const rentalProperties = (properties as any[])?.filter(p => p.transactionType === "location").length || 0;
+  const seasonalProperties = (properties as any[])?.filter(p => p.transactionType === "location_saisonniere").length || 0;
+  const pendingBookings = (bookings as any[])?.filter(b => b.status === "en_attente").length || 0;
+  const confirmedBookings = (bookings as any[])?.filter(b => b.status === "confirmee").length || 0;
+  const pendingAppointments = (appointments as any[])?.filter(a => a.statut === "en_attente").length || 0;
+  const recentContacts = (contacts as any[])?.slice(0, 3) || [];
+  const recentProperties = (properties as any[])?.slice(0, 3) || [];
+  const recentAppointments = (appointments as any[])?.slice(0, 3) || [];
+
+  const thisMonth = new Date();
+  const monthName = thisMonth.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Tableau de bord</h3>
-      <div className="grid grid-cols-3 gap-4">
+    <div className="space-y-6">
+      {/* KPI Cards */}
+      <div>
+        <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Vue d'ensemble</h3>
+        <div className="grid grid-cols-4 gap-3">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("properties")}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Total des propriétés</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{(properties as any[])?.length || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {saleProperties} vente · {rentalProperties} location
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("appointments")}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Visites programmées</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{(appointments as any[])?.length || 0}</div>
+              <p className="text-xs text-yellow-600 font-medium mt-1">{pendingAppointments} à traiter</p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("contacts")}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground">À traiter</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{(contacts as any[])?.length || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">demandes de contact</p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("bookings")}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground">Ce mois-ci</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{pendingBookings}</div>
+              <p className="text-xs text-yellow-600 font-medium mt-1">réservations en attente</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg border border-blue-200 dark:border-blue-800 p-6">
+        <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
+          <span>⚡ Actions rapides</span>
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">Accédez rapidement aux fonctionnalités principales</p>
+        <div className="grid grid-cols-4 gap-3">
+          <button
+            onClick={() => onNavigate("properties")}
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          >
+            <p className="text-sm font-semibold">Ajouter un bien</p>
+            <p className="text-xs text-muted-foreground">Nouvelle propriété</p>
+          </button>
+          <button
+            onClick={() => onNavigate("bookings")}
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          >
+            <p className="text-sm font-semibold">Réservations</p>
+            <p className="text-xs text-muted-foreground">Locations saisonnières</p>
+          </button>
+          <button
+            onClick={() => onNavigate("contacts")}
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          >
+            <p className="text-sm font-semibold">Demandes</p>
+            <p className="text-xs text-muted-foreground">Contacts et visites</p>
+          </button>
+          <button
+            onClick={() => onNavigate("planning")}
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          >
+            <p className="text-sm font-semibold">Paramètres</p>
+            <p className="text-xs text-muted-foreground">Configuration</p>
+          </button>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Recent Contacts */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Annonces</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Dernières demandes de contact</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(properties as any[])?.length || 0}</div>
+          <CardContent className="space-y-2">
+            {recentContacts.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucune demande</p>
+            ) : (
+              recentContacts.map((contact: any) => (
+                <div
+                  key={contact.id}
+                  onClick={() => onNavigate("contacts")}
+                  className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted transition-colors"
+                >
+                  <p className="font-semibold text-sm">{contact.nom}</p>
+                  <p className="text-xs text-muted-foreground">{contact.email}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {new Date(contact.createdAt).toLocaleDateString("fr-FR")}
+                  </p>
+                  <Badge className="mt-2 text-xs bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200">
+                    {contact.sujet}
+                  </Badge>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
+
+        {/* Recent Properties */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Réservations</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Dernières mises à jour de biens</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(bookings as any[])?.length || 0}</div>
+          <CardContent className="space-y-2">
+            {recentProperties.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucune annonce</p>
+            ) : (
+              recentProperties.map((property: any) => (
+                <div
+                  key={property.id}
+                  onClick={() => onNavigate("properties")}
+                  className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted transition-colors"
+                >
+                  <p className="font-semibold text-sm">{property.titre?.slice(0, 30)}...</p>
+                  <p className="text-xs text-muted-foreground">{property.transactionType}</p>
+                  <p className="font-bold text-sm mt-1">{property.prix}€</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(property.createdAt).toLocaleDateString("fr-FR")}
+                  </p>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
+
+        {/* Recent Appointments */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Rendez-vous</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Derniers rendez-vous</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{(appointments as any[])?.length || 0}</div>
+          <CardContent className="space-y-2">
+            {recentAppointments.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucun rendez-vous</p>
+            ) : (
+              recentAppointments.map((apt: any) => (
+                <div
+                  key={apt.id}
+                  onClick={() => onNavigate("appointments")}
+                  className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted transition-colors"
+                >
+                  <p className="font-semibold text-sm">{apt.nom}</p>
+                  <p className="text-xs text-muted-foreground">{apt.email}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {apt.date} à {apt.heure}
+                  </p>
+                  <Badge
+                    className={`mt-2 text-xs ${
+                      apt.statut === "confirmé"
+                        ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200"
+                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200"
+                    }`}
+                  >
+                    {apt.statut || "nouveau"}
+                  </Badge>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
@@ -321,15 +492,7 @@ export default function AdminDashboard() {
         <div className="flex-1 overflow-y-auto p-8">
 
           {activeTab === "stats" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Statistiques globales</CardTitle>
-                <CardDescription>Aperçu de votre activité KEYLOR</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <StatsAdmin />
-              </CardContent>
-            </Card>
+            <StatsAdmin onNavigate={setActiveTab} />
           )}
 
           {activeTab === "properties" && (
