@@ -841,7 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Visit availability routes
-  app.get("/api/visit-availability", async (req, res) => {
+  app.get("/api/visit-availabilities", async (req, res) => {
     try {
       const { date } = req.query;
       if (date && typeof date === 'string') {
@@ -855,7 +855,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/visit-availability", async (req, res) => {
+  app.post("/api/visit-availabilities", requireAdminAuth, async (req, res) => {
     try {
       const validatedData = insertVisitAvailabilitySchema.parse(req.body);
       const availability = await storage.createVisitAvailability(validatedData);
@@ -868,7 +868,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/visit-availability/:id", async (req, res) => {
+  app.patch("/api/visit-availabilities/:id", requireAdminAuth, async (req, res) => {
     try {
       const validatedData = insertVisitAvailabilitySchema.partial().parse(req.body);
       const availability = await storage.updateVisitAvailability(req.params.id, validatedData);
@@ -884,7 +884,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/visit-availability/:id", async (req, res) => {
+  app.delete("/api/visit-availabilities/:id", requireAdminAuth, async (req, res) => {
     try {
       const deleted = await storage.deleteVisitAvailability(req.params.id);
       if (!deleted) {
