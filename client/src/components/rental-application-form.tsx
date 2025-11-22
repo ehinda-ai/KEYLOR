@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertRentalApplicationSchema, type InsertRentalApplication, type Property } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { X, Plus } from "lucide-react";
 
 interface RentalApplicationFormProps {
   property: Property;
@@ -46,7 +47,15 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       autresRevenus: 0,
       totalRevenusMenuels: 0,
       typeGarantie: "caution_solidaire",
+      compositionMenage: "1_locataire",
+      garants: [],
+      numeroVisale: "",
     },
+  });
+
+  const { fields: garantsFields, append: appendGarant, remove: removeGarant } = useFieldArray({
+    control: form.control,
+    name: "garants",
   });
 
   const mutation = useMutation({
@@ -97,6 +106,9 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
       autresRevenus: other.toString(),
       totalRevenusMenuels: total,
       typeGarantie: data.typeGarantie,
+      compositionMenage: data.compositionMenage || "1_locataire",
+      garants: (data.garants || []).filter((g: string) => g && g.trim()),
+      numeroVisale: data.numeroVisale || "",
     };
     
     console.log("Submitting rental application:", finalData);
@@ -271,8 +283,103 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
               </div>
             )}
 
-            {/* Étape 3: Revenus */}
+            {/* Étape 3: Composition du ménage et garanties */}
             {step === 3 && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Composition du ménage et garanties</h3>
+
+                <FormField
+                  control={form.control}
+                  name="compositionMenage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Composition du ménage</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-composition">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1_locataire">1 locataire</SelectItem>
+                          <SelectItem value="2_locataires">2 locataires</SelectItem>
+                          <SelectItem value="famille">Famille</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Garants (optionnel)</h4>
+                  
+                  {garantsFields.map((field, index) => (
+                    <div key={field.id} className="flex gap-2 mb-2">
+                      <FormField
+                        control={form.control}
+                        name={`garants.${index}`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input 
+                                placeholder="Nom et prénom du garant" 
+                                {...field} 
+                                data-testid={`input-garant-${index}`}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removeGarant(index)}
+                        data-testid={`button-remove-garant-${index}`}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => appendGarant("")}
+                    className="gap-2"
+                    data-testid="button-add-garant"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Ajouter un garant
+                  </Button>
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="numeroVisale"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Numéro de dossier Visale (optionnel)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Laissez vide si pas de Visale" 
+                          {...field} 
+                          data-testid="input-numero-visale"
+                        />
+                      </FormControl>
+                      <p className="text-xs text-muted-foreground mt-1">Si vous avez un dossier Visale</p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
+            {/* Étape 4: Revenus */}
+            {step === 4 && (
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Revenus totaux</h3>
 
@@ -332,7 +439,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                 Précédent
               </Button>
               <div className="flex gap-2">
-                {step < 3 && (
+                {step < 4 && (
                   <Button
                     type="button"
                     onClick={() => setStep(step + 1)}
@@ -341,7 +448,7 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
                     Suivant
                   </Button>
                 )}
-                {step === 3 && (
+                {step === 4 && (
                   <Button
                     type="submit"
                     disabled={mutation.isPending}

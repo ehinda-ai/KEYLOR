@@ -474,9 +474,14 @@ export const rentalApplications = pgTable("rental_applications", {
   autresRevenus: decimal("autres_revenus", { precision: 10, scale: 2 }).default("0"),
   totalRevenusMenuels: decimal("total_revenus_mensuels", { precision: 10, scale: 2 }).notNull(), // Calculé automatiquement
   
+  // Composition du ménage
+  compositionMenage: text("composition_menage"), // "1_locataire", "2_locataires", "famille"
+  
   // Garanties
   typeGarantie: text("type_garantie"), // "caution_solidaire", "visale", "autre"
   garantieDetail: text("garantie_detail"),
+  garants: text("garants").array().default(sql`ARRAY[]::text[]`), // JSON array de garants
+  numeroVisale: text("numero_visale"), // Numéro du dossier Visale si applicable
   
   // Scoring
   score: integer("score").default(0), // 0-100
@@ -516,6 +521,9 @@ export const insertRentalApplicationSchema = createInsertSchema(rentalApplicatio
   prenom: z.string().min(2, "Prénom requis"),
   allocations: z.number().optional().default(0),
   autresRevenus: z.number().optional().default(0),
+  compositionMenage: z.string().optional(),
+  garants: z.array(z.string()).optional().default([]),
+  numeroVisale: z.string().optional(),
   totalRevenusMenuels: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val),
 });
 
