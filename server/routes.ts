@@ -1559,22 +1559,13 @@ Réponds au format JSON exact suivant:
     }
   });
 
-  // Serve uploaded objects (images) - for carousel images stored locally
-  // NOTE: Images de propriétés (property photos) viennent de l'INTRANET via resolveImageUrl()
-  // Cette route sert uniquement les images locales (carrousel héros, contact, etc.)
-  app.get("/objects/:objectPath(*)", async (req, res) => {
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
-      objectStorageService.downloadObject(objectFile, res);
-    } catch (error) {
-      console.error("Error retrieving object:", error);
-      if (error instanceof ObjectNotFoundError) {
-        return res.sendStatus(404);
-      }
-      return res.sendStatus(500);
-    }
-  });
+  // NOTE: Route /objects/:objectPath(*) SUPPRIMÉE définitivement
+  // ARCHITECTURE FINALE DES IMAGES:
+  // 1. Images du carrousel (héros, contact) → /assets/stock_images/ (servies par Vite)
+  // 2. Images de propriétés → /objects/public/* (servies par l'intranet via resolveImageUrl())
+  //    - En dev: http://localhost:5001/objects/public/*
+  //    - En prod: Nginx proxie vers intranet.keylor.fr
+  // La route /objects/ N'EXISTE PAS à la vitrine pour éviter les conflits
 
   const httpServer = createServer(app);
 
