@@ -213,11 +213,12 @@ export function PropertiesAdmin() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <Tabs defaultValue="base" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                       <TabsTrigger value="base">Infos</TabsTrigger>
                       <TabsTrigger value="localisation">Localisation</TabsTrigger>
                       <TabsTrigger value="legales">Légales</TabsTrigger>
                       <TabsTrigger value="equipements">Équipements</TabsTrigger>
+                      <TabsTrigger value="saisonniere">Saisonnière</TabsTrigger>
                     </TabsList>
 
                     {/* INFOS GÉNÉRALES */}
@@ -577,6 +578,208 @@ export function PropertiesAdmin() {
                         )} />
                       </div>
 
+                    </TabsContent>
+
+                    {/* LOCATION SAISONNIÈRE */}
+                    <TabsContent value="saisonniere" className="space-y-4">
+                      <p className="text-sm text-muted-foreground mb-4">Paramètres spécifiques aux locations saisonnières</p>
+                      
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Tarifs par saison</h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="prixBasseSaison"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Prix Basse Saison (€/nuit)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 60" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-low-season-price" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="prixMoyenneSaison"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Prix Moyenne Saison (€/nuit)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 85" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-mid-season-price" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="prixHauteSaison"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Prix Haute Saison (€/nuit)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 120" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-high-season-price" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Frais et dépôt</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="depotGarantie"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Dépôt de garantie (€)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 200" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-security-deposit" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="taxeSejour"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Taxe de séjour (€/nuit)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 5" {...field} value={field.value?.toString() ?? ""} onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)} data-testid="input-tourist-tax" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Capacité et règles</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="personnesMax"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nombre maximum de personnes</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 4" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)} data-testid="input-max-persons" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="dureeMinimaleNuits"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Durée minimale (nuits)</FormLabel>
+                                <FormControl>
+                                  <Input type="number" placeholder="Ex: 3" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)} data-testid="input-min-nights" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Horaires d'accueil</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="heureArriveeDebut"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Arrivée à partir de</FormLabel>
+                                <FormControl>
+                                  <Input type="time" {...field} value={field.value ?? ""} data-testid="input-check-in-start" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="heureArriveeFin"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Arrivée jusqu'à</FormLabel>
+                                <FormControl>
+                                  <Input type="time" {...field} value={field.value ?? ""} data-testid="input-check-in-end" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="heureDepartDebut"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Départ à partir de</FormLabel>
+                                <FormControl>
+                                  <Input type="time" {...field} value={field.value ?? ""} data-testid="input-check-out-start" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="heureDepartFin"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Départ jusqu'à</FormLabel>
+                                <FormControl>
+                                  <Input type="time" {...field} value={field.value ?? ""} data-testid="input-check-out-end" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Services inclus</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField control={form.control} name="menageInclus" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Ménage inclus</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="lingeInclus" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Linge de lit inclus</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="conciergerieIncluse" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Conciergerie incluse</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="fumeurAccepte" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Fumeur accepté</FormLabel>
+                            </FormItem>
+                          )} />
+                        </div>
+                      </div>
                     </TabsContent>
                   </Tabs>
 
