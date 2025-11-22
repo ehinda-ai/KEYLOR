@@ -270,7 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Permettre la mise à jour du statut en plus des champs du insertAppointmentSchema
       const updateSchema = insertAppointmentSchema.partial().extend({
-        statut: z.enum(['en_attente', 'confirmé', 'annulé']).optional()
+        statut: z.enum(['en_attente', 'confirme', 'annule']).optional()
       });
       const validatedData = updateSchema.parse(req.body);
       
@@ -286,8 +286,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Rendez-vous non trouvé" });
       }
       
-      // Si le statut passe à "confirmé", envoyer un email au client
-      if (validatedData.statut === 'confirmé' && currentAppointment.statut !== 'confirmé') {
+      // Si le statut passe à "confirme", envoyer un email au client
+      if (validatedData.statut === 'confirme' && currentAppointment.statut !== 'confirme') {
         console.log('[RDV] ✅ Changement de statut vers "confirmé" - Envoi email au client');
         
         // Récupérer la propriété pour l'email (sauf si RDV général)
@@ -321,8 +321,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('[RDV] Email de confirmation admin envoyé:', emailResult);
       }
       
-      // Si le statut passe à "annulé", envoyer un email au client
-      if (validatedData.statut === 'annulé' && currentAppointment.statut !== 'annulé') {
+      // Si le statut passe à "annule", envoyer un email au client
+      if (validatedData.statut === 'annule' && currentAppointment.statut !== 'annule') {
         console.log('[RDV] ❌ Changement de statut vers "annulé" - Envoi email au client');
         
         // Récupérer la propriété pour l'email (sauf si RDV général)
