@@ -54,7 +54,7 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <div className="flex flex-col min-h-screen">
-            {!isAdminPage && <Header />}
+            <Header />
             <main id="main-content" className="flex-1 bg-background">
               <Router />
             </main>
