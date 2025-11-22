@@ -188,7 +188,7 @@ function Bareme() {
                                   <span className="text-xs text-muted-foreground">loyer annuel HC</span>
                                 </div>
                               ) : (
-                                `${scale.honoraires ? formatPrice(scale.honoraires) : 'À définir'}`
+                                <>{scale.honoraires ? formatPrice(scale.honoraires) : 'À définir'}</>
                               )}
                             </span>
                           ) : (
