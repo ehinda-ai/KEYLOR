@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
 import { useState } from "react";
@@ -51,7 +51,17 @@ export function Header() {
           {/* Actions à droite */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <ThemeToggle />
-            {/* Bouton admin - CACHÉ pour ne pas afficher aux clients */}
+            <Link href="/admin/mon-compte">
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden md:flex items-center gap-2"
+                data-testid="button-admin-access"
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="text-sm">Mon compte</span>
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="icon"
@@ -79,6 +89,17 @@ export function Header() {
                 </Button>
               </Link>
             ))}
+            <Link href="/admin/mon-compte">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+                data-testid="link-mobile-admin"
+              >
+                <LogIn className="h-4 w-4" />
+                Mon compte
+              </Button>
+            </Link>
           </nav>
         )}
       </div>
