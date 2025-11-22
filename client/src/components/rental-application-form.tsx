@@ -82,37 +82,52 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
   });
 
   const handleSubmit = (data: any) => {
-    const salary = parseFloat(data.salaireMensuel?.toString() || "0");
-    const alloc = parseFloat(data.allocations?.toString() || "0");
-    const other = parseFloat(data.autresRevenus?.toString() || "0");
-    const total = salary + alloc + other;
+    try {
+      const salary = parseFloat(data.salaireMensuel?.toString() || "0");
+      const alloc = parseFloat(data.allocations?.toString() || "0");
+      const other = parseFloat(data.autresRevenus?.toString() || "0");
+      const total = salary + alloc + other;
 
-    const finalData = {
-      propertyId: data.propertyId,
-      propertyTitle: data.propertyTitle,
-      monthlyRent: (parseFloat(data.monthlyRent?.toString() || "0")).toString(),
-      civilite: data.civilite,
-      nom: data.nom,
-      prenom: data.prenom,
-      telephone: data.telephone,
-      email: data.email,
-      adresseActuelle: data.adresseActuelle,
-      situationFamiliale: data.situationFamiliale,
-      profession: data.profession || "",
-      typeContrat: data.typeContrat,
-      entreprise: data.entreprise || "",
-      salaireMensuel: salary.toString(),
-      allocations: alloc.toString(),
-      autresRevenus: other.toString(),
-      totalRevenusMenuels: total,
-      typeGarantie: data.typeGarantie,
-      compositionMenage: data.compositionMenage || "1_locataire",
-      garants: (data.garants || []).filter((g: string) => g && g.trim()),
-      numeroVisale: data.numeroVisale || "",
-    };
-    
-    console.log("Submitting rental application:", finalData);
-    mutation.mutate(finalData as any);
+      const finalData = {
+        propertyId: data.propertyId,
+        propertyTitle: data.propertyTitle,
+        monthlyRent: (parseFloat(data.monthlyRent?.toString() || "0")).toString(),
+        civilite: data.civilite || "M",
+        nom: data.nom,
+        prenom: data.prenom,
+        dateNaissance: data.dateNaissance || null,
+        lieuNaissance: data.lieuNaissance || null,
+        telephone: data.telephone,
+        email: data.email,
+        adresseActuelle: data.adresseActuelle,
+        situationFamiliale: data.situationFamiliale || null,
+        nombrePersonnesCharge: data.nombrePersonnesCharge || 0,
+        profession: data.profession || null,
+        typeContrat: data.typeContrat || null,
+        dateEmbauche: data.dateEmbauche || null,
+        entreprise: data.entreprise || null,
+        adresseEntreprise: data.adresseEntreprise || null,
+        salaireMensuel: salary.toString(),
+        allocations: alloc,
+        autresRevenus: other,
+        totalRevenusMenuels: total,
+        typeGarantie: data.typeGarantie || "caution_solidaire",
+        garantieDetail: data.garantieDetail || null,
+        compositionMenage: data.compositionMenage || "1_locataire",
+        garants: (data.garants || []).filter((g: string) => g && g.trim()),
+        numeroVisale: data.numeroVisale || null,
+      };
+      
+      console.log("Submitting rental application:", finalData);
+      mutation.mutate(finalData as any);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la préparation du formulaire",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
