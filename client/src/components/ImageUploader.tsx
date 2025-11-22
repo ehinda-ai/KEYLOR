@@ -23,6 +23,8 @@ export function ImageUploader({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    console.log("📸 ImageUploader: Fichier sélectionné", { name: file.name, size: file.size, type: file.type });
+
     // Vérifier le type de fichier
     if (!file.type.startsWith('image/')) {
       setError("Veuillez sélectionner une image");
@@ -44,8 +46,10 @@ export function ImageUploader({
       const reader = new FileReader();
       reader.onloadend = () => {
         const dataUrl = reader.result as string;
+        console.log("📸 ImageUploader: Data URL créée", { length: dataUrl.length, preview: dataUrl.substring(0, 50) });
         setPreview(dataUrl);
         // Utiliser la data URL directement - elle s'affiche dans tous les contexts
+        console.log("📸 ImageUploader: Appel onUploadComplete avec dataUrl");
         onUploadComplete(dataUrl);
       };
       reader.readAsDataURL(file);
