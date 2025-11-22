@@ -23,6 +23,7 @@ import { ContactsAdmin } from "@/components/contacts-admin";
 import { BookingsAdmin } from "@/components/bookings-admin";
 import { VisitAvailabilityAdmin } from "@/components/visit-availability-admin";
 import { SeasonalAvailabilityAdmin } from "@/components/seasonal-availability-admin";
+import { RentalApplicationsAdmin } from "@/components/rental-applications-admin";
 
 const ToolsAdmin = () => (
   <div className="space-y-4">
@@ -632,11 +633,11 @@ export default function AdminDashboard() {
           <div style={{ display: activeTab === "applications" ? "block" : "none" }}>
             <Card>
               <CardHeader>
-                <CardTitle>Étude des dossiers de candidature</CardTitle>
-                <CardDescription>Gestion, scoring et solvabilité des candidatures locataires</CardDescription>
+                <CardTitle>Dossiers de candidature locataires</CardTitle>
+                <CardDescription>Gestion complète des candidatures et analyse de solvabilité</CardDescription>
               </CardHeader>
               <CardContent>
-                <StudyApplications />
+                <RentalApplicationsAdmin />
               </CardContent>
             </Card>
           </div>
