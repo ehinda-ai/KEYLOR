@@ -19,6 +19,7 @@ import {
   Calendar as CalendarIcon,
   Mail,
   FileText,
+  Share2,
 } from "lucide-react";
 import {
   Dialog,
@@ -53,6 +54,7 @@ import {
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { ShareButton } from "@/components/share-button";
 
 export default function PropertyDetailPage() {
   const [, params] = useRoute("/proprietes/:id");
@@ -397,9 +399,17 @@ export default function PropertyDetailPage() {
               ) : (
                 <>
                   <Card className="p-6">
-                    <h3 className="text-xl font-serif font-normal mb-6">
-                      Intéressé par ce bien ?
-                    </h3>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-serif font-normal">
+                        Intéressé par ce bien ?
+                      </h3>
+                      <ShareButton
+                        propertyId={property.id}
+                        propertyTitle={property.titre}
+                        variant="outline"
+                        size="sm"
+                      />
+                    </div>
                     
                     <div className="space-y-3">
                       <Dialog open={appointmentDialogOpen} onOpenChange={setAppointmentDialogOpen}>

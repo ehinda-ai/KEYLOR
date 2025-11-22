@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Property } from "@shared/schema";
 import { AmenitiesIcons, CapacityInfo } from "./AmenitiesIcons";
+import { ShareButton } from "./share-button";
 import { resolveImageUrl, getDefaultPropertyImage } from "@/lib/imageUrl";
 
 interface PropertyCardProps {
@@ -82,18 +83,26 @@ export function PropertyCard({ property, searchDates }: PropertyCardProps) {
             )}
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm hover:bg-background"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            data-testid={`button-favorite-${property.id}`}
-          >
-            <Heart className="h-4 w-4" />
-          </Button>
+          <div className="absolute top-4 right-4 flex gap-2">
+            <ShareButton
+              propertyId={property.id}
+              propertyTitle={property.titre}
+              variant="ghost"
+              size="icon"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-background/90 backdrop-blur-sm hover:bg-background"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              data-testid={`button-favorite-${property.id}`}
+            >
+              <Heart className="h-4 w-4" />
+            </Button>
+          </div>
 
           <div className="absolute bottom-4 left-4 right-4">
             {property.transactionType === "location_saisonniere" && property.prixBasseSaison ? (
