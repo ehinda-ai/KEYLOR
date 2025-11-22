@@ -150,14 +150,49 @@ export function BookingsAdmin() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewDetails(booking)}
-                      data-testid={`button-view-booking-${booking.id}`}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      {booking.status === "en_attente" && (
+                        <>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => confirmMutation.mutate(booking.id)}
+                            data-testid={`button-confirm-booking-${booking.id}`}
+                            disabled={confirmMutation.isPending}
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => refuseMutation.mutate(booking.id)}
+                            data-testid={`button-refuse-booking-${booking.id}`}
+                            disabled={refuseMutation.isPending}
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </Button>
+                        </>
+                      )}
+                      {booking.status === "confirmee" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => cancelMutation.mutate(booking.id)}
+                          data-testid={`button-cancel-booking-${booking.id}`}
+                          disabled={cancelMutation.isPending}
+                        >
+                          Annuler
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewDetails(booking)}
+                        data-testid={`button-view-booking-${booking.id}`}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

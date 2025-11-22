@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, CheckCircle2, XCircle, Clock, Download, Mail } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, XCircle, Clock, Download, Mail, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
@@ -113,6 +113,28 @@ export function AppointmentsAdmin() {
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de l'envoi de l'email", variant: "destructive" });
+    },
+  });
+
+  const confirmMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("PATCH", `/api/appointments/${id}`, { statut: "confirme" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
+      toast({ title: "Rendez-vous confirmé" });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Erreur lors de la confirmation", variant: "destructive" });
+    },
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("PATCH", `/api/appointments/${id}`, { statut: "annule" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
+      toast({ title: "Rendez-vous annulé" });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Erreur lors de l'annulation", variant: "destructive" });
     },
   });
 
@@ -260,7 +282,29 @@ export function AppointmentsAdmin() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 flex-wrap">
+                      {apt.statut === "en_attente" && (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => confirmMutation.mutate(apt.id)}
+                          data-testid={`button-confirm-appointment-${apt.id}`}
+                          disabled={confirmMutation.isPending}
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {apt.statut === "confirme" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => cancelMutation.mutate(apt.id)}
+                          data-testid={`button-cancel-appointment-${apt.id}`}
+                          disabled={cancelMutation.isPending}
+                        >
+                          Annuler
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
