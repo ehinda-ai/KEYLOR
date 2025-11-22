@@ -472,7 +472,7 @@ export function PropertiesAdmin() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="">Non renseigné</SelectItem>
+                                  <SelectItem value="non-renseigne">Non renseigné</SelectItem>
                                   <SelectItem value="A">A</SelectItem>
                                   <SelectItem value="B">B</SelectItem>
                                   <SelectItem value="C">C</SelectItem>
@@ -493,14 +493,14 @@ export function PropertiesAdmin() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>GES</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                              <Select onValueChange={field.onChange} defaultValue={field.value || "non-renseigne"}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="">Non renseigné</SelectItem>
+                                  <SelectItem value="non-renseigne">Non renseigné</SelectItem>
                                   <SelectItem value="A">A</SelectItem>
                                   <SelectItem value="B">B</SelectItem>
                                   <SelectItem value="C">C</SelectItem>
