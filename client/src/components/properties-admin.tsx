@@ -3,15 +3,12 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Property, InsertProperty, insertPropertySchema } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -42,6 +39,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function PropertiesAdmin() {
   const { toast } = useToast();
@@ -52,26 +52,38 @@ export function PropertiesAdmin() {
     queryKey: ["/api/properties"],
   });
 
-  const form = useForm<InsertProperty>({
-    resolver: zodResolver(insertPropertySchema),
+  const form = useForm<Partial<InsertProperty>>({
+    resolver: zodResolver(insertPropertySchema.partial()),
     defaultValues: {
       titre: "",
       description: "",
       type: "appartement",
       transactionType: "vente",
-      prix: "",
+      prix: "0",
       surface: 0,
-      pieces: null,
-      chambres: null,
       ville: "",
       codePostal: "",
       localisation: "",
-      photos: [],
+      featured: false,
+      statut: "disponible",
+      dpe: "",
+      ges: "",
+      copropriete: false,
+      wifi: false,
+      tv: false,
+      parking: false,
+      piscine: false,
+      chauffage: false,
+      climatisation: false,
+      animauxAcceptes: false,
+      dureeMinimaleNuits: 1,
+      heureArriveeDebut: "14:00",
+      heureArriveeFin: "20:00",
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: InsertProperty) => {
+    mutationFn: async (data: Partial<InsertProperty>) => {
       const response = await apiRequest("POST", "/api/properties", data);
       return await response.json();
     },
@@ -81,10 +93,10 @@ export function PropertiesAdmin() {
       setDialogOpen(false);
       form.reset();
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Erreur",
-        description: "Erreur lors de la création",
+        description: error instanceof Error ? error.message : "Erreur lors de la création",
         variant: "destructive",
       });
     },
@@ -101,10 +113,10 @@ export function PropertiesAdmin() {
       setEditingProperty(null);
       setDialogOpen(false);
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Erreur",
-        description: "Erreur lors de la mise à jour",
+        description: error instanceof Error ? error.message : "Erreur lors de la mise à jour",
         variant: "destructive",
       });
     },
@@ -116,22 +128,18 @@ export function PropertiesAdmin() {
       queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
       toast({ title: "Propriété supprimée" });
     },
-    onError: () => {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la suppression",
-        variant: "destructive",
-      });
-    },
   });
 
   const handleEdit = (property: Property) => {
     setEditingProperty(property);
-    form.reset(property);
+    form.reset({
+      ...property,
+      prix: String(property.prix),
+    });
     setDialogOpen(true);
   };
 
-  const onSubmit = async (data: InsertProperty) => {
+  const onSubmit = async (data: Partial<InsertProperty>) => {
     if (editingProperty) {
       await updateMutation.mutateAsync({
         id: editingProperty.id,
@@ -145,7 +153,7 @@ export function PropertiesAdmin() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Gestion des annonces</h3>
+        <h3 className="text-lg font-semibold">Annonces ({properties.length})</h3>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => {
@@ -156,154 +164,344 @@ export function PropertiesAdmin() {
               Nouvelle annonce
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-3xl max-h-[90vh]">
             <DialogHeader>
-              <DialogTitle>{editingProperty ? "Modifier" : "Nouvelle"} annonce</DialogTitle>
+              <DialogTitle>{editingProperty ? "Modifier" : "Créer"} une annonce</DialogTitle>
             </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="titre"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Titre</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Titre de l'annonce" {...field} data-testid="input-property-title" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <ScrollArea className="h-[calc(90vh-120px)] pr-4">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <Tabs defaultValue="base" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="base">Infos</TabsTrigger>
+                      <TabsTrigger value="localisation">Localisation</TabsTrigger>
+                      <TabsTrigger value="legales">Légales</TabsTrigger>
+                      <TabsTrigger value="equipements">Équipements</TabsTrigger>
+                    </TabsList>
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Description détaillée" {...field} data-testid="input-property-description" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    {/* INFOS GÉNÉRALES */}
+                    <TabsContent value="base" className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="titre"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Titre *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Ex: Bel appartement 2 pièces" {...field} data-testid="input-title" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-property-type">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="appartement">Appartement</SelectItem>
-                            <SelectItem value="maison">Maison</SelectItem>
-                            <SelectItem value="terrain">Terrain</SelectItem>
-                            <SelectItem value="bureau">Bureau</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description *</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="Description détaillée..." rows={4} {...field} data-testid="input-description" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="transactionType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type de transaction</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-transaction-type">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="vente">Vente</SelectItem>
-                            <SelectItem value="location">Location</SelectItem>
-                            <SelectItem value="location_saisonniere">Location saisonnière</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Type *</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-type">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="appartement">Appartement</SelectItem>
+                                  <SelectItem value="maison">Maison</SelectItem>
+                                  <SelectItem value="terrain">Terrain</SelectItem>
+                                  <SelectItem value="commercial">Commercial</SelectItem>
+                                  <SelectItem value="mobilhome">Mobilhome</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="prix"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Prix</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Prix" {...field} data-testid="input-property-price" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                        <FormField
+                          control={form.control}
+                          name="transactionType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Type transaction *</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-transaction">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="vente">Vente</SelectItem>
+                                  <SelectItem value="location">Location</SelectItem>
+                                  <SelectItem value="location_saisonniere">Saisonnière</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
-                  <FormField
-                    control={form.control}
-                    name="surface"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Surface (m²)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} data-testid="input-property-surface" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="prix"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Prix *</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} data-testid="input-price" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="surface"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Surface m² *</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} data-testid="input-surface" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="statut"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Statut</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="disponible">Disponible</SelectItem>
+                                  <SelectItem value="vendu">Vendu</SelectItem>
+                                  <SelectItem value="loue">Loué</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="ville"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ville</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ville" {...field} data-testid="input-property-city" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="featured"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl>
+                              <Checkbox checked={!!field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <FormLabel>Mettre en avant</FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </TabsContent>
 
-                  <FormField
-                    control={form.control}
-                    name="codePostal"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Code postal</FormLabel>
-                        <FormControl>
-                          <Input placeholder="75001" {...field} data-testid="input-property-zipcode" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                    {/* LOCALISATION */}
+                    <TabsContent value="localisation" className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="localisation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Adresse *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Ex: 123 Rue de la Paix" {...field} data-testid="input-address" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                <Button type="submit" className="w-full" data-testid="button-submit-property">
-                  {editingProperty ? "Mettre à jour" : "Créer"}
-                </Button>
-              </form>
-            </Form>
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="ville"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Ville *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Lyon" {...field} data-testid="input-city" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="codePostal"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Code postal *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="75001" {...field} data-testid="input-zipcode" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                    </TabsContent>
+
+                    {/* MENTIONS LÉGALES */}
+                    <TabsContent value="legales" className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="dpe"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>DPE</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="">Non renseigné</SelectItem>
+                                  <SelectItem value="A">A</SelectItem>
+                                  <SelectItem value="B">B</SelectItem>
+                                  <SelectItem value="C">C</SelectItem>
+                                  <SelectItem value="D">D</SelectItem>
+                                  <SelectItem value="E">E</SelectItem>
+                                  <SelectItem value="F">F</SelectItem>
+                                  <SelectItem value="G">G</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="ges"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>GES</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="">Non renseigné</SelectItem>
+                                  <SelectItem value="A">A</SelectItem>
+                                  <SelectItem value="B">B</SelectItem>
+                                  <SelectItem value="C">C</SelectItem>
+                                  <SelectItem value="D">D</SelectItem>
+                                  <SelectItem value="E">E</SelectItem>
+                                  <SelectItem value="F">F</SelectItem>
+                                  <SelectItem value="G">G</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="copropriete"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl>
+                              <Checkbox checked={!!field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <FormLabel>Copropriété</FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    </TabsContent>
+
+                    {/* ÉQUIPEMENTS */}
+                    <TabsContent value="equipements" className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField control={form.control} name="wifi" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">WiFi</FormLabel>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="tv" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">TV</FormLabel>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="parking" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">Parking</FormLabel>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="piscine" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">Piscine</FormLabel>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="chauffage" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">Chauffage</FormLabel>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="climatisation" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">Climatisation</FormLabel>
+                          </FormItem>
+                        )} />
+                        <FormField control={form.control} name="animauxAcceptes" render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="cursor-pointer">Animaux acceptés</FormLabel>
+                          </FormItem>
+                        )} />
+                      </div>
+
+                    </TabsContent>
+                  </Tabs>
+
+                  <Button type="submit" className="w-full" data-testid="button-submit">
+                    {editingProperty ? "Mettre à jour" : "Créer"}
+                  </Button>
+                </form>
+              </Form>
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
@@ -319,12 +517,13 @@ export function PropertiesAdmin() {
                 <TableHead>Type</TableHead>
                 <TableHead>Ville</TableHead>
                 <TableHead>Prix</TableHead>
+                <TableHead>Statut</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {properties.map((property) => (
-                <TableRow key={property.id} data-testid={`row-property-${property.id}`}>
+                <TableRow key={property.id} data-testid={`row-${property.id}`}>
                   <TableCell className="font-medium">{property.titre}</TableCell>
                   <TableCell>{property.type}</TableCell>
                   <TableCell className="flex items-center gap-1">
@@ -333,7 +532,16 @@ export function PropertiesAdmin() {
                   </TableCell>
                   <TableCell className="flex items-center gap-1">
                     <Euro className="w-4 h-4" />
-                    {property.prix}
+                    {Number(property.prix).toLocaleString('fr-FR')}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      property.statut === 'disponible' ? 'bg-green-100 text-green-800' :
+                      property.statut === 'vendu' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {property.statut}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
@@ -341,15 +549,19 @@ export function PropertiesAdmin() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(property)}
-                        data-testid={`button-edit-property-${property.id}`}
+                        data-testid={`btn-edit-${property.id}`}
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => deleteMutation.mutate(property.id)}
-                        data-testid={`button-delete-property-${property.id}`}
+                        onClick={() => {
+                          if (confirm("Êtes-vous sûr ?")) {
+                            deleteMutation.mutate(property.id);
+                          }
+                        }}
+                        data-testid={`btn-delete-${property.id}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
