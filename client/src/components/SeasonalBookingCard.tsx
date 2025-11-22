@@ -320,7 +320,7 @@ export function SeasonalBookingCard({
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal"
+                  className="justify-start text-left font-normal"
                   data-testid="button-dates"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
