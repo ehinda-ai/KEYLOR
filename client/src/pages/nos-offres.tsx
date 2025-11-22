@@ -517,13 +517,15 @@ export default function NosOffresPage() {
       </section>
 
       {/* Modal formulaire candidature location */}
-      <RentalApplicationForm
-        property={selectedPropertyForApplication!}
-        open={!!selectedPropertyForApplication}
-        onOpenChange={(open) => {
-          if (!open) setSelectedPropertyForApplication(null);
-        }}
-      />
+      {selectedPropertyForApplication && (
+        <RentalApplicationForm
+          property={selectedPropertyForApplication}
+          open={!!selectedPropertyForApplication}
+          onOpenChange={(open) => {
+            if (!open) setSelectedPropertyForApplication(null);
+          }}
+        />
+      )}
     </div>
   );
 }
