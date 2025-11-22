@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
+import type { DateRange } from "react-day-picker";
 import {
   Popover,
   PopoverContent,
@@ -28,14 +29,17 @@ interface SeasonalSearchBarProps {
 }
 
 export function SeasonalSearchBar({ onSearch }: SeasonalSearchBarProps) {
-  const [dateArrivee, setDateArrivee] = useState<Date>();
-  const [dateDepart, setDateDepart] = useState<Date>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [nombreVoyageurs, setNombreVoyageurs] = useState<number>(2);
+
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+  };
 
   const handleSearch = () => {
     onSearch({
-      dateArrivee,
-      dateDepart,
+      dateArrivee: dateRange?.from,
+      dateDepart: dateRange?.to,
       nombreVoyageurs,
     });
   };
@@ -43,66 +47,37 @@ export function SeasonalSearchBar({ onSearch }: SeasonalSearchBarProps) {
   return (
     <Card className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="space-y-2">
-          <Label>Arrivée</Label>
+        <div className="space-y-2 md:col-span-2">
+          <Label>Dates de séjour</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className="w-full justify-start text-left font-normal"
-                data-testid="button-date-arrivee"
+                data-testid="button-date-range"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateArrivee ? (
-                  format(dateArrivee, "dd MMM yyyy", { locale: fr })
+                {dateRange?.from && dateRange?.to ? (
+                  <>
+                    {format(dateRange.from, "dd MMM", { locale: fr })} -{" "}
+                    {format(dateRange.to, "dd MMM yyyy", { locale: fr })}
+                  </>
+                ) : dateRange?.from ? (
+                  format(dateRange.from, "dd MMM yyyy", { locale: fr })
                 ) : (
-                  <span className="text-muted-foreground">Date d'arrivée</span>
+                  <span className="text-muted-foreground">Sélectionner les dates</span>
                 )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
-                mode="single"
-                selected={dateArrivee}
-                onSelect={setDateArrivee}
+                mode="range"
+                selected={dateRange}
+                onSelect={handleDateChange}
                 disabled={(date) => date < new Date()}
                 initialFocus
                 locale={fr}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Départ</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal"
-                data-testid="button-date-depart"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateDepart ? (
-                  format(dateDepart, "dd MMM yyyy", { locale: fr })
-                ) : (
-                  <span className="text-muted-foreground">Date de départ</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={dateDepart}
-                onSelect={setDateDepart}
-                disabled={(date) => {
-                  if (dateArrivee) {
-                    return date <= dateArrivee;
-                  }
-                  return date < new Date();
-                }}
-                initialFocus
-                locale={fr}
+                numberOfMonths={2}
               />
             </PopoverContent>
           </Popover>
@@ -140,9 +115,9 @@ export function SeasonalSearchBar({ onSearch }: SeasonalSearchBarProps) {
         </div>
       </div>
 
-      {dateArrivee && dateDepart && (
+      {dateRange?.from && dateRange?.to && (
         <div className="mt-4 text-sm text-muted-foreground text-center">
-          {Math.ceil((dateDepart.getTime() - dateArrivee.getTime()) / (1000 * 60 * 60 * 24))} nuits • {nombreVoyageurs} {nombreVoyageurs === 1 ? "voyageur" : "voyageurs"}
+          {Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24))} nuits • {nombreVoyageurs} {nombreVoyageurs === 1 ? "voyageur" : "voyageurs"}
         </div>
       )}
     </Card>
