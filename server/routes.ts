@@ -54,14 +54,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Routes d'authentification admin
   app.post("/api/admin/login", async (req: any, res) => {
     try {
-      const { password } = req.body;
+      const { identifier, password } = req.body;
+      const adminIdentifier = process.env.ADMIN_IDENTIFIER || "keylor";
       const adminPassword = process.env.ADMIN_PASSWORD || "keylor2024";
       
-      if (password === adminPassword) {
+      if (identifier === adminIdentifier && password === adminPassword) {
         req.session.isAdminAuthenticated = true;
         return res.json({ success: true });
       }
-      return res.status(401).json({ error: "Mot de passe incorrect" });
+      return res.status(401).json({ error: "Identifiant ou mot de passe incorrect" });
     } catch (error) {
       res.status(500).json({ error: "Erreur lors de l'authentification" });
     }

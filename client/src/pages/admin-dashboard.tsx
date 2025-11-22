@@ -322,6 +322,7 @@ const ConfigAdmin = () => {
 export default function AdminDashboard() {
   const [, navigate] = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [activeTab, setActiveTab] = useState("stats");
@@ -354,11 +355,12 @@ export default function AdminDashboard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ identifier, password }),
       });
       if (response.ok) {
         setIsAuthenticated(true);
         setShowLoginForm(false);
+        setIdentifier("");
         setPassword("");
       } else {
         const error = await response.json();
@@ -391,6 +393,18 @@ export default function AdminDashboard() {
           <p className="text-gray-600 mb-6">Espace privé - Gestion KEYLOR</p>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Identifiant</label>
+              <input
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Entrez votre identifiant"
+                data-testid="input-admin-identifier"
+                autoFocus
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
               <input
                 type="password"
@@ -399,7 +413,6 @@ export default function AdminDashboard() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Entrez le mot de passe"
                 data-testid="input-admin-password"
-                autoFocus
               />
             </div>
             <button
