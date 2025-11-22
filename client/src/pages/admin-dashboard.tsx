@@ -154,30 +154,31 @@ export default function AdminDashboard() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Accès Admin</CardTitle>
-            <CardDescription>Mon compte - Gestion KEYLOR</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Mot de passe administrateur</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md mt-1"
-                  placeholder="Entrez le mot de passe"
-                  data-testid="input-admin-password"
-                />
-              </div>
-              <Button type="submit" className="w-full" data-testid="button-admin-login">
-                Accéder à mon compte
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">Accès Admin</h1>
+          <p className="text-gray-600 mb-6">Mon compte - Gestion KEYLOR</p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe administrateur</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Entrez le mot de passe"
+                data-testid="input-admin-password"
+                autoFocus
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition"
+              data-testid="button-admin-login"
+            >
+              Accéder à mon compte
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
