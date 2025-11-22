@@ -73,20 +73,34 @@ export function RentalApplicationForm({ property, open, onOpenChange }: RentalAp
   });
 
   const handleSubmit = (data: any) => {
-    const total =
-      (parseFloat(data.salaireMensuel?.toString() || "0")) +
-      (parseFloat(data.allocations?.toString() || "0")) +
-      (parseFloat(data.autresRevenus?.toString() || "0"));
+    const salary = parseFloat(data.salaireMensuel?.toString() || "0");
+    const alloc = parseFloat(data.allocations?.toString() || "0");
+    const other = parseFloat(data.autresRevenus?.toString() || "0");
+    const total = salary + alloc + other;
 
     const finalData = {
-      ...data,
-      monthlyRent: parseFloat(data.monthlyRent?.toString() || "0"),
-      salaireMensuel: parseFloat(data.salaireMensuel?.toString() || "0"),
-      allocations: parseFloat(data.allocations?.toString() || "0"),
-      autresRevenus: parseFloat(data.autresRevenus?.toString() || "0"),
+      propertyId: data.propertyId,
+      propertyTitle: data.propertyTitle,
+      monthlyRent: (parseFloat(data.monthlyRent?.toString() || "0")).toString(),
+      civilite: data.civilite,
+      nom: data.nom,
+      prenom: data.prenom,
+      telephone: data.telephone,
+      email: data.email,
+      adresseActuelle: data.adresseActuelle,
+      situationFamiliale: data.situationFamiliale,
+      profession: data.profession || "",
+      typeContrat: data.typeContrat,
+      entreprise: data.entreprise || "",
+      salaireMensuel: salary.toString(),
+      allocations: alloc.toString(),
+      autresRevenus: other.toString(),
       totalRevenusMenuels: total,
+      typeGarantie: data.typeGarantie,
     };
-    mutation.mutate(finalData as InsertRentalApplication);
+    
+    console.log("Submitting rental application:", finalData);
+    mutation.mutate(finalData as any);
   };
 
   return (
