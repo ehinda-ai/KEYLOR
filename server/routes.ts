@@ -19,13 +19,12 @@ import {
   insertSeasonalAvailabilitySchema,
   insertRentalApplicationSchema,
   insertSitePdfSchema,
-  insertQuotationTemplateSchema,
-  insertQuotationTemplateItemSchema,
 } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { sendBookingRequestEmail, sendBookingConfirmationEmail, sendBookingRefusalEmail, sendBookingCancellationEmail, sendAppointmentConfirmationEmails, sendAppointmentAdminConfirmationEmail, sendAppointmentCancellationEmail } from "./email";
 import { calculateTravelTime, formatPropertyAddress } from "./routing";
 import { generateAppointmentICalendar } from "./calendar";
+import { generateQuotationPdf } from "./quotation-pdf";
 import Mailjet from 'node-mailjet';
 
 // Configuration globale (en mémoire)
@@ -1990,50 +1989,32 @@ Réponds au format JSON exact suivant:
     }
   });
 
-  // Quotation Templates Routes
-  app.get("/api/quotation-templates", async (req, res) => {
+  // Generate quotation PDF with logo
+  app.post("/api/quotation/generate-pdf", async (req, res) => {
     try {
-      const templates = await storage.getAllQuotationTemplates();
-      res.json(templates);
+      const { clientName, services, rentalAmount } = req.body;
+      if (!clientName || !services || !Array.isArray(services)) {
+        return res.status(400).json({ error: "Données manquantes" });
+      }
+
+      const pdfBuffer = await generateQuotationPdf(
+        clientName,
+        services,
+        rentalAmount || 1000
+      );
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="devis-${clientName.toLowerCase().replace(/\s+/g, "-")}.pdf"`
+      );
+      res.send(pdfBuffer);
     } catch (error) {
-      res.status(500).json({ error: "Erreur lors de la récupération des modèles" });
+      console.error("Error generating PDF:", error);
+      res.status(500).json({ error: "Erreur lors de la génération du PDF" });
     }
   });
 
-  app.post("/api/quotation-templates", requireAdminAuth, async (req, res) => {
-    try {
-      const validatedData = insertQuotationTemplateSchema.parse(req.body);
-      const template = await storage.createQuotationTemplate(validatedData);
-      
-      if (req.body.items && Array.isArray(req.body.items)) {
-        for (const item of req.body.items) {
-          await storage.createQuotationTemplateItem({
-            ...insertQuotationTemplateItemSchema.parse(item),
-            templateId: template.id,
-          });
-        }
-      }
-      
-      res.status(201).json(template);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: error.errors });
-      }
-      res.status(500).json({ error: "Erreur lors de la création du modèle" });
-    }
-  });
-
-  app.delete("/api/quotation-templates/:id", requireAdminAuth, async (req, res) => {
-    try {
-      const deleted = await storage.deleteQuotationTemplate(req.params.id);
-      if (!deleted) {
-        return res.status(404).json({ error: "Modèle non trouvé" });
-      }
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: "Erreur lors de la suppression du modèle" });
-    }
-  });
 
   // NOTE: Route /objects/:objectPath(*) SUPPRIMÉE définitivement
   // ARCHITECTURE FINALE DES IMAGES:

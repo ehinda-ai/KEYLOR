@@ -15,7 +15,6 @@ import { SocialReviewsAdmin } from "@/components/social-reviews-admin";
 import { StudyApplications } from "@/components/study-applications";
 import { PlanningAdmin } from "@/components/planning-admin";
 import { ConfigPdfsAdmin } from "@/components/config-pdfs-admin";
-import { QuotationBuilderAdmin } from "@/components/quotation-builder-admin";
 
 // Composants CRUD nouveaux
 import { PropertiesAdmin } from "@/components/properties-admin";
@@ -554,27 +553,15 @@ export default function AdminDashboard() {
           </div>
 
           <div style={{ display: activeTab === "estimation" ? "block" : "none" }}>
-            <div className="grid gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Générateur de Devis</CardTitle>
-                  <CardDescription>Créez des modèles de devis personnalisés avec vos tarifs</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <QuotationBuilderAdmin />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Outils IA et calculettes</CardTitle>
-                  <CardDescription>Estimations, simulations crédit, modules avancés</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ToolsAdmin />
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Outils IA et calculettes</CardTitle>
+                <CardDescription>Estimations, simulations crédit, modules avancés</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ToolsAdmin />
+              </CardContent>
+            </Card>
           </div>
 
           <div style={{ display: activeTab === "planning" ? "block" : "none" }}>

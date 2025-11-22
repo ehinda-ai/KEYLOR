@@ -558,39 +558,3 @@ export const insertSitePdfSchema = createInsertSchema(sitePdfs).omit({
 export type InsertSitePdf = z.infer<typeof insertSitePdfSchema>;
 export type SitePdf = typeof sitePdfs.$inferSelect;
 
-// Modèles de devis (Quotation Templates)
-export const quotationTemplates = pgTable("quotation_templates", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  nom: text("nom").notNull(), // "Gestion locative", "Recherche locataire"
-  description: text("description"),
-  type: text("type").notNull(), // "location", "vente", "location_saisonniere"
-  actif: boolean("actif").notNull().default(true),
-  ordre: integer("ordre").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const quotationTemplateItems = pgTable("quotation_template_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  templateId: varchar("template_id").notNull(),
-  label: text("label").notNull(), // "Gestion locative", "Frais de recherche"
-  description: text("description"),
-  valeur: decimal("valeur", { precision: 10, scale: 2 }).notNull(), // Montant ou pourcentage
-  type: text("type").notNull(), // "percentage" ou "fixed"
-  ordre: integer("ordre").notNull().default(0),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const insertQuotationTemplateSchema = createInsertSchema(quotationTemplates).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertQuotationTemplateItemSchema = createInsertSchema(quotationTemplateItems).omit({
-  id: true,
-  createdAt: true,
-});
-
-export type InsertQuotationTemplate = z.infer<typeof insertQuotationTemplateSchema>;
-export type QuotationTemplate = typeof quotationTemplates.$inferSelect;
-export type InsertQuotationTemplateItem = z.infer<typeof insertQuotationTemplateItemSchema>;
-export type QuotationTemplateItem = typeof quotationTemplateItems.$inferSelect;
