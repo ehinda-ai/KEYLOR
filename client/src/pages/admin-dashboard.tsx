@@ -12,63 +12,32 @@ import { PricingScalesAdmin } from "@/components/pricing-scales-admin";
 import { ContactCarouselAdmin } from "@/components/contact-carousel-admin";
 import { SocialReviewsAdmin } from "@/components/social-reviews-admin";
 
-// Composants à créer
-const PropertiesAdmin = () => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Gestion des annonces</h3>
-    <p className="text-sm text-muted-foreground">Module de gestion des propriétés à vendre, louer et locations saisonnières</p>
-    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-sm">
-      Intégration en cours - Routes API déjà disponibles : GET/POST /api/properties, PATCH/DELETE
-    </div>
-  </div>
-);
+// Composants CRUD nouveaux
+import { PropertiesAdmin } from "@/components/properties-admin";
+import { AppointmentsAdmin } from "@/components/appointments-admin";
+import { ContactsAdmin } from "@/components/contacts-admin";
+import { BookingsAdmin } from "@/components/bookings-admin";
+import { VisitAvailabilityAdmin } from "@/components/visit-availability-admin";
+import { SeasonalAvailabilityAdmin } from "@/components/seasonal-availability-admin";
 
-const AppointmentsAdmin = () => (
+const ToolsAdmin = () => (
   <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Gestion des rendez-vous</h3>
-    <p className="text-sm text-muted-foreground">Créneaux de visite, disponibilités, réservations</p>
-    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-sm">
-      Routes API : GET/POST /api/appointments, PATCH/DELETE /api/appointments/:id
-    </div>
-  </div>
-);
-
-const ContactsAdmin = () => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Gestion des contacts</h3>
-    <p className="text-sm text-muted-foreground">Demandes de contact, messages clients</p>
-    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-sm">
-      Routes API : GET /api/contacts, POST/PATCH/DELETE /api/contacts/:id
-    </div>
-  </div>
-);
-
-const BookingsAdmin = () => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Gestion des réservations saisonnières</h3>
-    <p className="text-sm text-muted-foreground">Demandes de réservation, confirmations, refus</p>
-    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-sm">
-      Routes API : GET /api/seasonal-booking-requests, PUT/:id/confirm, PUT/:id/refuse, PUT/:id/cancel
-    </div>
-  </div>
-);
-
-const EstimationsAdmin = () => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Estimations IA</h3>
-    <p className="text-sm text-muted-foreground">Estimations de propriétés avec OpenAI</p>
-    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-sm">
-      Route API : POST /api/estimate-ai (disponible)
-    </div>
-  </div>
-);
-
-const AlertsAdmin = () => (
-  <div className="space-y-4">
-    <h3 className="text-lg font-semibold">Alertes propriétés</h3>
-    <p className="text-sm text-muted-foreground">Alertes clients basées sur critères de recherche</p>
-    <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md text-sm">
-      Routes API : GET/POST /api/property-alerts, PATCH/DELETE
+    <h3 className="text-lg font-semibold">Outils IA et calculettes</h3>
+    <div className="grid grid-cols-2 gap-4">
+      <div className="border rounded-lg p-4">
+        <h4 className="font-semibold text-sm mb-2">Estimations AI</h4>
+        <p className="text-xs text-muted-foreground mb-3">API pour estimer les propriétés avec OpenAI</p>
+        <div className="text-xs bg-blue-50 dark:bg-blue-950 p-2 rounded font-mono">
+          POST /api/estimate-ai
+        </div>
+      </div>
+      <div className="border rounded-lg p-4">
+        <h4 className="font-semibold text-sm mb-2">Simulations crédit</h4>
+        <p className="text-xs text-muted-foreground mb-3">Calculs de simulation de crédit immobilier</p>
+        <div className="text-xs bg-blue-50 dark:bg-blue-950 p-2 rounded font-mono">
+          GET /api/loan-simulations
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -267,51 +236,37 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="properties" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion des annonces</CardTitle>
-                <CardDescription>Ventes, locations, locations saisonnières</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PropertiesAdmin />
-              </CardContent>
-            </Card>
+            <PropertiesAdmin />
           </TabsContent>
 
           <TabsContent value="appointments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestion des visites</CardTitle>
-                <CardDescription>Créneau de visites et rendez-vous</CardDescription>
-              </CardHeader>
-              <CardContent>
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Rendez-vous de visite</h2>
                 <AppointmentsAdmin />
-              </CardContent>
-            </Card>
+              </div>
+              <div className="border-t pt-6">
+                <h2 className="text-xl font-semibold mb-4">Configuration des créneaux</h2>
+                <VisitAvailabilityAdmin />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="contacts" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Messages et contacts</CardTitle>
-                <CardDescription>Demandes de contact, alertes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ContactsAdmin />
-              </CardContent>
-            </Card>
+            <ContactsAdmin />
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Réservations saisonnières</CardTitle>
-                <CardDescription>Gestion des demandes de réservation</CardDescription>
-              </CardHeader>
-              <CardContent>
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Demandes de réservation</h2>
                 <BookingsAdmin />
-              </CardContent>
-            </Card>
+              </div>
+              <div className="border-t pt-6">
+                <h2 className="text-xl font-semibold mb-4">Gestion des saisons</h2>
+                <SeasonalAvailabilityAdmin />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="images" className="space-y-4">
@@ -339,11 +294,11 @@ export default function AdminDashboard() {
           <TabsContent value="estimation" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Estimations & Outils IA</CardTitle>
-                <CardDescription>Estimations de propriétés, simulations de crédit</CardDescription>
+                <CardTitle>Outils IA et calculettes</CardTitle>
+                <CardDescription>Estimations, simulations crédit, modules avancés</CardDescription>
               </CardHeader>
               <CardContent>
-                <EstimationsAdmin />
+                <ToolsAdmin />
               </CardContent>
             </Card>
           </TabsContent>
