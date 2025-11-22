@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Property } from "@shared/schema";
 import { AmenitiesIcons, CapacityInfo } from "./AmenitiesIcons";
-import { resolveImageUrl } from "@/lib/imageUrl";
+import { resolveImageUrl, getDefaultPropertyImage } from "@/lib/imageUrl";
 
 interface PropertyCardProps {
   property: Property;
@@ -24,7 +24,7 @@ export function PropertyCard({ property, searchDates }: PropertyCardProps) {
     }).format(parseFloat(price));
   };
 
-  const mainPhoto = resolveImageUrl(property.photos[0]) || '/placeholder.jpg';
+  const mainPhoto = resolveImageUrl(property.photos[0]) || getDefaultPropertyImage(property.transactionType);
 
   const buildPropertyUrl = () => {
     let url = `/proprietes/${property.id}`;
@@ -49,6 +49,10 @@ export function PropertyCard({ property, searchDates }: PropertyCardProps) {
             src={mainPhoto}
             alt={property.titre}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              const img = e.target as HTMLImageElement;
+              img.src = getDefaultPropertyImage(property.transactionType);
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           
