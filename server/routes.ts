@@ -1045,8 +1045,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const images = activeOnly 
         ? await storage.getActiveHeroImages()
         : await storage.getAllHeroImages();
-      console.log(`📸 GET /api/hero-images - ${images.length} image(s) trouvée(s), activeOnly=${activeOnly}`);
-      console.log("   Images retournées:", images.map(img => ({ id: img.id, titre: img.titre, urlLength: img.imageUrl?.length || 0 })));
       res.json(images);
     } catch (error) {
       res.status(500).json({ error: "Erreur lors de la récupération des images" });
@@ -1067,19 +1065,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/hero-images", async (req, res) => {
     try {
-      console.log("📸 POST /api/hero-images - Body reçu:", { 
-        imageUrl: req.body.imageUrl?.substring(0, 50) || "VIDE",
-        titre: req.body.titre,
-        ordre: req.body.ordre,
-        actif: req.body.actif
-      });
       const validatedData = insertHeroImageSchema.parse(req.body);
-      console.log("✅ Données validées pour hero-image");
       const image = await storage.createHeroImage(validatedData);
-      console.log("💾 Hero-image créée avec succès:", { id: image.id, imageUrlLength: image.imageUrl.length });
       res.status(201).json(image);
     } catch (error) {
-      console.error("❌ Erreur POST /api/hero-images:", error);
       if (error instanceof Error && error.name === "ZodError") {
         return res.status(400).json({ error: "Données invalides", details: error });
       }

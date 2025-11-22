@@ -33,7 +33,7 @@ The primary business goal is lead generation through strategic capture of sales 
 - Keep geographic mentions broad: "Drôme, Ardèche et toute la France" without being too specific
 - Goal: capture leads nationwide while mentioning Drôme/Ardèche as starting region
 
-**Recent Major Changes (Nov 22, 2025 - DATA RECOVERY + BUG FIXES)**:
+**Recent Major Changes (Nov 22, 2025 - IMAGE CAROUSELS + DATA FEEDS FIX)**:
 - ✅ MERGED intranet into KEYLOR vitrine (single app - COMPLETE)
 - ✅ Calendar system: iCalendar (.ics) generation for appointments - VERIFIED WORKING
 - ✅ Email system: Mailjet integration (booking confirmations, appointment notifications) - VERIFIED WORKING
@@ -47,12 +47,16 @@ The primary business goal is lead generation through strategic capture of sales 
 - ✅ **NEW: Géolocalisation** - Latitude/Longitude dans onglet Localisation (pour carte + trajets)
 - ✅ **FIXED: Bug "Légales"** - SelectItem avec value="" remplacé par "non-renseigne"
 - ✅ **FIXED: Photo uploads** - Support data URLs (base64) en admin + vitrine
+- ✅ **FIXED: Image carousels** - HeroCarousel et ContactCarousel maintenant chargent dynamiquement les photos uploadées
+- ✅ **FIXED: /api/pricing-scales** - Priorité correcte du filtre type pour afficher tarifs par service (vente/location)
+- ✅ **FIXED: Admin data on public pages** - Tarifs, avis, réseaux sociaux maintenant s'affichent sur pages publiques (vendre, gestion-location, contact)
 - ✅ All TypeScript checks pass (0 errors)
 - ✅ Build: 143.3KB (Express server)
 - ✅ ALL 74 API routes tested and working
 - ✅ Seasonal booking system with confirmation codes - WORKING
 - ✅ Appointment system with delegation support - WORKING
 - ✅ **ZERO DATA LOSS** - All intranet features preserved + recovered
+- ✅ **Dynamic photo management** - Ajout/modification/suppression photos en temps réel sur carousels
 
 ## System Architecture
 
