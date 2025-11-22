@@ -13,7 +13,8 @@ function Bareme() {
     }
   });
 
-  const venteScales = scales?.filter(s => s.type === 'vente' && !s.categorie && s.nom === 'Mandat Simple') || [];
+  // Filtre les tarifs correctement par type
+  const venteScales = scales?.filter(s => s.type === 'vente' && s.categorie === 'mandat' && s.nom === 'Mandat Simple') || [];
   const avisValeurScales = scales?.filter(s => s.type === 'vente' && s.categorie === 'avis_valeur').sort((a, b) => (a.ordre || 0) - (b.ordre || 0)) || [];
   const vacationScales = scales?.filter(s => s.type === 'vente' && s.categorie === 'vacation').sort((a, b) => (a.ordre || 0) - (b.ordre || 0)) || [];
   

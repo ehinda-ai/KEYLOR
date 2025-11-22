@@ -970,12 +970,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { type, active } = req.query;
       let scales;
       
-      // Priorité: type > active > tous (getPricingScalesByType retourne déjà les actifs)
-      if (type) {
+      // Si type ET active: retourne seulement les actifs du type spécifié (getPricingScalesByType filtre déjà par actif)
+      if (type && active === 'true') {
         scales = await storage.getPricingScalesByType(type as string);
-      } else if (active === 'true') {
+      } 
+      // Si type seulement: retourne TOUS du type (actifs et inactifs)
+      else if (type) {
+        const all = await storage.getAllPricingScales();
+        scales = all.filter(s => s.type === type);
+      } 
+      // Si active seulement: retourne tous les actifs de tous types
+      else if (active === 'true') {
         scales = await storage.getActivePricingScales();
-      } else {
+      } 
+      // Aucun filtre: retourne tous
+      else {
         scales = await storage.getAllPricingScales();
       }
       
