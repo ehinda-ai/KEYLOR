@@ -514,6 +514,8 @@ export const insertRentalApplicationSchema = createInsertSchema(rentalApplicatio
   telephone: z.string().min(10, "Téléphone invalide"),
   nom: z.string().min(2, "Nom requis"),
   prenom: z.string().min(2, "Prénom requis"),
+  allocations: z.number().optional().default(0),
+  autresRevenus: z.number().optional().default(0),
   totalRevenusMenuels: z.string().or(z.number()).transform(val => typeof val === 'string' ? parseFloat(val) : val),
 });
 
