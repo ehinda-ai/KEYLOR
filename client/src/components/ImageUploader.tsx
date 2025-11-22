@@ -40,39 +40,44 @@ export function ImageUploader({
     setUploading(true);
 
     try {
-      // Créer une preview
+      // Créer une preview data URL
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
+      reader.onloadend = async () => {
+        const dataUrl = reader.result as string;
+        setPreview(dataUrl);
+
+        try {
+          // Essayer d'upload sur GCS
+          const fileExtension = file.name.split('.').pop() || 'jpg';
+          const response = await apiRequest("POST", "/api/upload/get-url", { fileExtension });
+          const { uploadURL, objectPath } = await response.json();
+
+          // Upload le fichier directement sur Google Cloud Storage
+          const uploadResponse = await fetch(uploadURL, {
+            method: "PUT",
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error("Erreur lors de l'upload du fichier");
+          }
+
+          // Upload réussi: notifier le parent avec le chemin GCS
+          onUploadComplete(objectPath);
+        } catch (uploadErr) {
+          console.error("GCS upload error:", uploadErr);
+          // Fallback: utiliser la data URL locale
+          onUploadComplete(dataUrl);
+        }
       };
       reader.readAsDataURL(file);
-
-      // Obtenir l'extension du fichier
-      const fileExtension = file.name.split('.').pop() || 'jpg';
-
-      // Obtenir l'URL d'upload signée
-      const response = await apiRequest("POST", "/api/upload/get-url", { fileExtension });
-      const { uploadURL, objectPath } = await response.json();
-
-      // Upload le fichier directement sur Google Cloud Storage
-      const uploadResponse = await fetch(uploadURL, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Erreur lors de l'upload du fichier");
-      }
-
-      // Notifier le parent avec le chemin de l'objet
-      onUploadComplete(objectPath);
       
     } catch (err) {
       console.error("Upload error:", err);
-      setError("Erreur lors de l'upload de l'image");
+      setError("Erreur lors du traitement de l'image");
       setPreview(currentImage || null);
     } finally {
       setUploading(false);
