@@ -43,7 +43,7 @@ export function AppointmentForm({ propertyId, origine, onSuccess }: AppointmentF
   const getDefaultMotif = () => {
     if (origine === "gerer") return "gerer";
     if (origine === "vendre") return "vendre";
-    return "audit";
+    return "visite";
   };
 
   const getMotifLabel = (motif: string) => {
