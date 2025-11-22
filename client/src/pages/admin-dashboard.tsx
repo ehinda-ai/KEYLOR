@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { LogOut, Building2, Calendar, Mail, Images, BarChart3, DollarSign, Users, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -258,6 +257,21 @@ export default function AdminDashboard() {
     );
   }
 
+  const [activeTab, setActiveTab] = useState("stats");
+
+  const navItems = [
+    { id: "stats", icon: BarChart3, label: "Tableau" },
+    { id: "properties", icon: Building2, label: "Annonces" },
+    { id: "appointments", icon: Calendar, label: "Visites" },
+    { id: "contacts", icon: Mail, label: "Contacts" },
+    { id: "bookings", icon: DollarSign, label: "Réservations" },
+    { id: "images", icon: Images, label: "Images" },
+    { id: "estimation", icon: Users, label: "IA" },
+    { id: "planning", icon: Calendar, label: "Planning" },
+    { id: "settings", icon: Settings, label: "Config" },
+    { id: "applications", icon: Mail, label: "Dossiers" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b">
@@ -278,52 +292,35 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <Tabs defaultValue="stats" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="stats" className="gap-2">
-              <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Tableau</span>
-            </TabsTrigger>
-            <TabsTrigger value="properties" className="gap-2">
-              <Building2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Annonces</span>
-            </TabsTrigger>
-            <TabsTrigger value="appointments" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              <span className="hidden sm:inline">Visites</span>
-            </TabsTrigger>
-            <TabsTrigger value="contacts" className="gap-2">
-              <Mail className="w-4 h-4" />
-              <span className="hidden sm:inline">Contacts</span>
-            </TabsTrigger>
-            <TabsTrigger value="bookings" className="gap-2">
-              <DollarSign className="w-4 h-4" />
-              <span className="hidden sm:inline">Réservations</span>
-            </TabsTrigger>
-            <TabsTrigger value="images" className="gap-2">
-              <Images className="w-4 h-4" />
-              <span className="hidden sm:inline">Images</span>
-            </TabsTrigger>
-            <TabsTrigger value="estimation" className="gap-2">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">IA</span>
-            </TabsTrigger>
-            <TabsTrigger value="planning" className="gap-2">
-              <Calendar className="w-4 h-4" />
-              <span className="hidden sm:inline">Planning</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="gap-2">
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Config</span>
-            </TabsTrigger>
-            <TabsTrigger value="applications" className="gap-2">
-              <Mail className="w-4 h-4" />
-              <span className="hidden sm:inline">Dossiers</span>
-            </TabsTrigger>
-          </TabsList>
+      <div className="flex min-h-[calc(100vh-150px)]">
+        {/* Sidebar navigation */}
+        <div className="w-48 border-r bg-muted/30 p-4 overflow-y-auto">
+          <nav className="space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium ${
+                    activeTab === item.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                  data-testid={`button-nav-${item.id}`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
-          <TabsContent value="stats" className="space-y-4">
+        {/* Main content */}
+        <div className="flex-1 overflow-y-auto p-8">
+
+          {activeTab === "stats" && (
             <Card>
               <CardHeader>
                 <CardTitle>Statistiques globales</CardTitle>
@@ -333,13 +330,13 @@ export default function AdminDashboard() {
                 <StatsAdmin />
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
-          <TabsContent value="properties" className="space-y-4">
+          {activeTab === "properties" && (
             <PropertiesAdmin />
-          </TabsContent>
+          )}
 
-          <TabsContent value="appointments" className="space-y-4">
+          {activeTab === "appointments" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-4">Rendez-vous de visite</h2>
@@ -350,13 +347,13 @@ export default function AdminDashboard() {
                 <VisitAvailabilityAdmin />
               </div>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="contacts" className="space-y-4">
+          {activeTab === "contacts" && (
             <ContactsAdmin />
-          </TabsContent>
+          )}
 
-          <TabsContent value="bookings" className="space-y-4">
+          {activeTab === "bookings" && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-4">Demandes de réservation</h2>
@@ -367,9 +364,9 @@ export default function AdminDashboard() {
                 <SeasonalAvailabilityAdmin />
               </div>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="images" className="space-y-4">
+          {activeTab === "images" && (
             <div className="grid gap-4">
               <Card>
                 <CardHeader>
@@ -389,9 +386,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="estimation" className="space-y-4">
+          {activeTab === "estimation" && (
             <Card>
               <CardHeader>
                 <CardTitle>Outils IA et calculettes</CardTitle>
@@ -401,9 +398,9 @@ export default function AdminDashboard() {
                 <ToolsAdmin />
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
-          <TabsContent value="planning" className="space-y-4">
+          {activeTab === "planning" && (
             <Card>
               <CardHeader>
                 <CardTitle>Planning Visites & Réservations</CardTitle>
@@ -413,9 +410,9 @@ export default function AdminDashboard() {
                 <PlanningAdmin />
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
-          <TabsContent value="settings" className="space-y-4">
+          {activeTab === "settings" && (
             <div className="grid gap-4">
               <Card>
                 <CardHeader>
@@ -444,9 +441,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
+          )}
 
-          <TabsContent value="applications" className="space-y-4">
+          {activeTab === "applications" && (
             <Card>
               <CardHeader>
                 <CardTitle>Étude des dossiers de candidature</CardTitle>
@@ -456,8 +453,8 @@ export default function AdminDashboard() {
                 <StudyApplications />
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </div>
     </div>
   );
