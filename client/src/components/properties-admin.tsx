@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, Edit, MapPin, Euro, Copy, Upload } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -83,6 +84,14 @@ export function PropertiesAdmin() {
     },
   });
 
+  // Reset form quando dialog fecha
+  useEffect(() => {
+    if (!dialogOpen) {
+      setEditingProperty(null);
+      form.reset();
+    }
+  }, [dialogOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const createMutation = useMutation({
     mutationFn: async (data: Partial<InsertProperty>) => {
       const response = await apiRequest("POST", "/api/properties", data);
@@ -92,7 +101,6 @@ export function PropertiesAdmin() {
       queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
       toast({ title: "Propriété créée avec succès" });
       setDialogOpen(false);
-      form.reset();
     },
     onError: (error) => {
       toast({
@@ -197,10 +205,7 @@ export function PropertiesAdmin() {
         <h3 className="text-lg font-semibold">Annonces ({properties.length})</h3>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => {
-              setEditingProperty(null);
-              form.reset();
-            }} data-testid="button-add-property">
+            <Button onClick={() => setDialogOpen(true)} data-testid="button-add-property">
               <Plus className="w-4 h-4 mr-2" />
               Nouvelle annonce
             </Button>
@@ -810,6 +815,78 @@ export function PropertiesAdmin() {
                             <FormItem className="flex items-center gap-3 space-y-0">
                               <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
                               <FormLabel className="cursor-pointer">Fumeur accepté</FormLabel>
+                            </FormItem>
+                          )} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h4 className="font-semibold">Équipements</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField control={form.control} name="wifi" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">WiFi</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="tv" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">TV</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="laveLinge" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Lave-linge</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="laveVaisselle" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Lave-vaisselle</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="secheLinge" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Sèche-linge</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="parking" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Parking</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="piscine" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Piscine</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="jardin" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Jardin</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="chauffage" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Chauffage</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="climatisation" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Climatisation</FormLabel>
+                            </FormItem>
+                          )} />
+                          <FormField control={form.control} name="animauxAcceptes" render={({ field }) => (
+                            <FormItem className="flex items-center gap-3 space-y-0">
+                              <FormControl><Checkbox checked={!!field.value} onCheckedChange={field.onChange} /></FormControl>
+                              <FormLabel className="cursor-pointer">Animaux acceptés</FormLabel>
                             </FormItem>
                           )} />
                         </div>
