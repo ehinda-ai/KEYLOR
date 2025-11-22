@@ -48,6 +48,7 @@ export function VisitAvailabilityAdmin() {
   const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAvailability, setEditingAvailability] = useState<VisitAvailability | null>(null);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const { data: availabilities = [] } = useQuery<VisitAvailability[]>({
     queryKey: ["/api/visit-availabilities"],
@@ -101,11 +102,41 @@ export function VisitAvailabilityAdmin() {
     setDialogOpen(true);
   };
 
-  const onSubmit = async (data: InsertVisitAvailability) => {
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev =>
+      prev.includes(day)
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
+  };
+
+  const onSubmit = async (data: Omit<InsertVisitAvailability, 'jourSemaine'>) => {
     if (editingAvailability) {
-      await updateMutation.mutateAsync({ id: editingAvailability.id, data });
+      await updateMutation.mutateAsync({ id: editingAvailability.id, data: { ...data, jourSemaine: editingAvailability.jourSemaine } });
     } else {
-      await createMutation.mutateAsync(data);
+      if (selectedDays.length === 0) {
+        toast({
+          title: "Sélection requise",
+          description: "Veuillez cocher au moins un jour",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Créer une disponibilité pour chaque jour sélectionné
+      try {
+        for (const day of selectedDays) {
+          await createMutation.mutateAsync({
+            ...data,
+            jourSemaine: day,
+          });
+        }
+        setSelectedDays([]);
+        form.reset();
+        setDialogOpen(false);
+      } catch (error) {
+        // Error already handled
+      }
     }
   };
 
@@ -138,45 +169,39 @@ export function VisitAvailabilityAdmin() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} data-testid="input-availability-date" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="jourSemaine"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Jour de la semaine</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-availability-day">
-                              <SelectValue placeholder="Sélectionner un jour" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {JOURS_SEMAINE.map((jour) => (
-                              <SelectItem key={jour.value} value={jour.value}>
-                                {jour.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div>
+                  <FormLabel className="text-base font-medium mb-3 block">Jours disponibles</FormLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    {JOURS_SEMAINE.map((jour) => (
+                      <button
+                        key={jour.value}
+                        type="button"
+                        onClick={() => toggleDay(jour.value)}
+                        className={`px-4 py-2 rounded-md border text-sm font-medium transition ${
+                          selectedDays.includes(jour.value)
+                            ? "bg-accent text-accent-foreground border-accent"
+                            : "border-input bg-background hover:bg-accent/50"
+                        }`}
+                        data-testid={`button-day-${jour.value}`}
+                      >
+                        {jour.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} data-testid="input-availability-date" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
