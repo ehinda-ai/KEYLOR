@@ -174,14 +174,29 @@ function Bareme() {
 
               {vacationScales.length > 0 && (
                 <div className="space-y-2 mt-4">
-                  <h4 className="font-semibold text-sm mb-3 text-foreground">Vacation / Conseil</h4>
-                  <div className="space-y-1 text-sm">
+                  <h4 className="font-semibold text-sm mb-3 text-foreground">Vacation / Conseil & Entremise</h4>
+                  <div className="space-y-2 text-sm">
                     {vacationScales.map((scale) => (
-                      <div key={scale.id} className="flex justify-between text-foreground">
-                        <span>{scale.nom}</span>
-                        <span className="font-medium text-accent">
-                          {scale.honoraires ? formatPrice(scale.honoraires) : `${scale.tauxPourcentage}%`}
-                        </span>
+                      <div key={scale.id} className="text-xs py-1">
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
+                          {scale.nom === "Honoraires entremise" ? (
+                            <span className="font-semibold text-accent text-right shrink-0 leading-tight">
+                              {scale.tauxPourcentage ? (
+                                <div className="flex flex-col items-end leading-[1.2]">
+                                  <span className="font-bold text-sm">{scale.tauxPourcentage}%</span>
+                                  <span className="text-xs text-muted-foreground">loyer annuel HC</span>
+                                </div>
+                              ) : (
+                                `${scale.honoraires ? formatPrice(scale.honoraires) : 'À définir'}`
+                              )}
+                            </span>
+                          ) : (
+                            <span className="font-medium text-accent text-right">
+                              {scale.honoraires ? formatPrice(scale.honoraires) : `${scale.tauxPourcentage}%`}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
