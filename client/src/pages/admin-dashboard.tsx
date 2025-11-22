@@ -13,6 +13,7 @@ import { PricingScalesAdmin } from "@/components/pricing-scales-admin";
 import { ContactCarouselAdmin } from "@/components/contact-carousel-admin";
 import { SocialReviewsAdmin } from "@/components/social-reviews-admin";
 import { StudyApplications } from "@/components/study-applications";
+import { PlanningAdmin } from "@/components/planning-admin";
 
 // Composants CRUD nouveaux
 import { PropertiesAdmin } from "@/components/properties-admin";
@@ -308,6 +309,10 @@ export default function AdminDashboard() {
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">IA</span>
             </TabsTrigger>
+            <TabsTrigger value="planning" className="gap-2">
+              <Calendar className="w-4 h-4" />
+              <span className="hidden sm:inline">Planning</span>
+            </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Config</span>
@@ -394,6 +399,18 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <ToolsAdmin />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="planning" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Planning Visites & Réservations</CardTitle>
+                <CardDescription>Calendrier, codes couleur, exports (Excel/PDF) et partage email</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PlanningAdmin />
               </CardContent>
             </Card>
           </TabsContent>
