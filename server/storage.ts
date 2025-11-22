@@ -410,7 +410,7 @@ export class MemStorage implements IStorage {
     sampleProperties.forEach((prop) => {
       const id = randomUUID();
       const property: Property = {
-        ...prop,
+        ...(prop as any),
         id,
         pieces: prop.pieces ?? null,
         chambres: prop.chambres ?? null,
@@ -584,7 +584,7 @@ export class MemStorage implements IStorage {
   async createProperty(insertProperty: InsertProperty): Promise<Property> {
     const id = randomUUID();
     const property: Property = {
-      ...insertProperty,
+      ...(insertProperty as any),
       id,
       pieces: insertProperty.pieces ?? null,
       chambres: insertProperty.chambres ?? null,
@@ -666,7 +666,10 @@ export class MemStorage implements IStorage {
     const appointment: Appointment = {
       ...insertAppointment,
       id,
+      motif: insertAppointment.motif ?? '',
       message: insertAppointment.message ?? null,
+      delegueA: insertAppointment.delegueA ?? null,
+      delegueEmail: insertAppointment.delegueEmail ?? null,
       statut: "en_attente",
       createdAt: new Date(),
     };
@@ -824,6 +827,7 @@ export class MemStorage implements IStorage {
       id,
       dureeVisite: insertAvailability.dureeVisite ?? 45,
       margeSecurite: insertAvailability.margeSecurite ?? 15,
+      intervalleCreneaux: insertAvailability.intervalleCreneaux ?? 30,
       actif: insertAvailability.actif ?? true,
       createdAt: new Date(),
     };
@@ -1206,6 +1210,9 @@ export class MemStorage implements IStorage {
       id,
       confirmationCode,
       ...request,
+      message: request.message ?? null,
+      numChildren: request.numChildren ?? 0,
+      totalPrice: request.totalPrice ?? null,
       status: 'en_attente',
       createdAt: new Date(),
     };
@@ -1286,6 +1293,9 @@ export class MemStorage implements IStorage {
     const seasonalAvailability: SeasonalAvailability = {
       id,
       ...availability,
+      motif: availability.motif ?? '',
+      bloque: availability.bloque ?? false,
+      notes: availability.notes ?? null,
       createdAt: new Date(),
     };
     this.seasonalAvailabilitiesMap.set(id, seasonalAvailability);
