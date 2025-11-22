@@ -26,6 +26,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const JOURS_SEMAINE = [
+  { value: "lundi", label: "Lundi" },
+  { value: "mardi", label: "Mardi" },
+  { value: "mercredi", label: "Mercredi" },
+  { value: "jeudi", label: "Jeudi" },
+  { value: "vendredi", label: "Vendredi" },
+  { value: "samedi", label: "Samedi" },
+  { value: "dimanche", label: "Dimanche" },
+];
 
 export function VisitAvailabilityAdmin() {
   const { toast } = useToast();
@@ -39,6 +56,8 @@ export function VisitAvailabilityAdmin() {
   const form = useForm<InsertVisitAvailability>({
     resolver: zodResolver(insertVisitAvailabilitySchema),
     defaultValues: {
+      date: new Date().toISOString().split('T')[0],
+      jourSemaine: "lundi",
       heureDebut: "09:00",
       heureFin: "18:00",
       dureeVisite: 45,
@@ -122,6 +141,45 @@ export function VisitAvailabilityAdmin() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} data-testid="input-availability-date" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="jourSemaine"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Jour de la semaine</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-availability-day">
+                              <SelectValue placeholder="Sélectionner un jour" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {JOURS_SEMAINE.map((jour) => (
+                              <SelectItem key={jour.value} value={jour.value}>
+                                {jour.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
                     name="heureDebut"
                     render={({ field }) => (
                       <FormItem>
@@ -201,9 +259,9 @@ export function VisitAvailabilityAdmin() {
           <Card key={availability.id} className={availability.actif ? "border-green-500" : ""}>
             <CardContent className="flex justify-between items-center pt-6">
               <div>
-                <p className="font-semibold">{availability.heureDebut} - {availability.heureFin}</p>
+                <p className="font-semibold">{availability.jourSemaine.charAt(0).toUpperCase() + availability.jourSemaine.slice(1)} - {availability.heureDebut} - {availability.heureFin}</p>
                 <p className="text-sm text-muted-foreground">
-                  Visite : {availability.dureeVisite}min | Marge : {availability.margeSecurite}min
+                  {availability.date} | Visite : {availability.dureeVisite}min | Marge : {availability.margeSecurite}min
                 </p>
               </div>
               <div className="flex gap-2">
