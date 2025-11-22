@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -69,22 +69,29 @@ export function AppointmentsCalendar() {
     queryKey: ["/api/appointments"],
   });
 
-  const filteredProperties = properties.filter(p => {
-    if (transactionFilter === "all") return true;
-    return p.transactionType === transactionFilter;
-  });
-
-  const filteredAppointments = appointments.filter(a => 
-    selectedPropertyId === "all" || a.propertyId === selectedPropertyId
+  const filteredProperties = useMemo(() => 
+    properties.filter(p => {
+      if (transactionFilter === "all") return true;
+      return p.transactionType === transactionFilter;
+    }), [properties, transactionFilter]
   );
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  const filteredAppointments = useMemo(() => 
+    appointments.filter(a => 
+      selectedPropertyId === "all" || a.propertyId === selectedPropertyId
+    ), [appointments, selectedPropertyId]
+  );
 
-  const getAppointmentsForDay = (date: Date) => {
+  const { monthStart, monthEnd, calendarStart, calendarEnd, calendarDays } = useMemo(() => {
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    const cStart = startOfWeek(start, { weekStartsOn: 1 });
+    const cEnd = endOfWeek(end, { weekStartsOn: 1 });
+    const days = eachDayOfInterval({ start: cStart, end: cEnd });
+    return { monthStart: start, monthEnd: end, calendarStart: cStart, calendarEnd: cEnd, calendarDays: days };
+  }, [currentMonth]);
+
+  const getAppointmentsForDay = useCallback((date: Date) => {
     return filteredAppointments.filter(appt => {
       try {
         const apptDate = parseISO(appt.date);
@@ -93,7 +100,7 @@ export function AppointmentsCalendar() {
         return false;
       }
     });
-  };
+  }, [filteredAppointments]);
 
   const generatePlanningHTML = () => {
     const selectedProperty = selectedPropertyId === "all" 

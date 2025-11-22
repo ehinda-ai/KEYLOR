@@ -74,7 +74,7 @@ export default function HomePage() {
                 <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                   <Link href="/vendre#estimation-form">
                     <Button size="lg" variant="default" data-testid="button-hero-estimate">
-                      Estimer mon bien
+                      Faire estimer mon bien à la vente
                     </Button>
                   </Link>
                   <Link href="/nos-offres">

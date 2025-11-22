@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { MapPin, Maximize, Bed, Heart } from "lucide-react";
+import { MapPin, Maximize, Bed } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,18 +90,6 @@ export function PropertyCard({ property, searchDates }: PropertyCardProps) {
               variant="ghost"
               size="icon"
             />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-background/90 backdrop-blur-sm hover:bg-background"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              data-testid={`button-favorite-${property.id}`}
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
           </div>
 
           <div className="absolute bottom-4 left-4 right-4">

@@ -300,7 +300,7 @@ export default function VendrePage() {
       {/* Formulaire d'estimation */}
       <section id="estimation-form" className="container mx-auto py-16 px-4">
         <h2 className="font-serif text-3xl md:text-4xl text-center mb-4">
-          Estimez votre bien gratuitement
+          Faire estimer mon bien à la vente
         </h2>
         <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
           Obtenez une estimation précise de votre bien par nos experts en moins de 24h
@@ -308,6 +308,23 @@ export default function VendrePage() {
         <Card className="p-8 max-w-3xl mx-auto">
           <EstimatorForm />
         </Card>
+      </section>
+
+      {/* CTA Prendre un RV */}
+      <section className="py-8 px-6 bg-accent/5">
+        <div className="container mx-auto max-w-5xl text-center">
+          <h2 className="text-4xl md:text-5xl font-serif font-light mb-4" data-testid="text-cta-appointment">
+            Prêt à vendre votre bien ?
+          </h2>
+          <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Nos experts vous conseillent sans engagement pour définir la meilleure stratégie de vente.
+          </p>
+          <Link href="/rendez-vous?origine=vendre" onClick={() => window.scrollTo(0, 0)}>
+            <Button size="lg" className="px-8" data-testid="button-cta-appointment-sell">
+              Prendre un rendez-vous
+            </Button>
+          </Link>
+        </div>
       </section>
     </div>
   );
