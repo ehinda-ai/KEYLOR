@@ -28,6 +28,18 @@ import Mailjet from 'node-mailjet';
 // Configuration globale (en mémoire)
 let minimumSaleFee = 4500;
 
+// Cache pour les créneaux disponibles (clé: propertyId:date)
+const slotsCache = new Map<string, { slots: any[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+function getCacheKey(propertyId: string, date: string): string {
+  return `${propertyId}:${date}`;
+}
+
+function clearSlotsCache(): void {
+  slotsCache.clear();
+}
+
 // Middleware pour vérifier l'authentification admin
 function requireAdminAuth(req: any, res: any, next: any) {
   if (req.session?.isAdminAuthenticated) {
@@ -229,6 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const appointment = await storage.createAppointment(validatedData);
+      clearSlotsCache(); // Vider le cache des créneaux
       
       // Récupérer la propriété pour les emails (sauf si RDV général)
       let property = null;
@@ -289,6 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!appointment) {
         return res.status(404).json({ error: "Rendez-vous non trouvé" });
       }
+      clearSlotsCache(); // Vider le cache des créneaux
       
       // Si le statut passe à "confirme", envoyer un email au client
       if (validatedData.statut === 'confirme' && currentAppointment.statut !== 'confirme') {
@@ -368,6 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!deleted) {
         return res.status(404).json({ error: "Rendez-vous non trouvé" });
       }
+      clearSlotsCache(); // Vider le cache des créneaux
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Erreur lors de la suppression du rendez-vous" });
@@ -488,6 +503,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/appointments/available-slots/:propertyId/:date", async (req, res) => {
     try {
       const { propertyId, date } = req.params;
+      
+      // Vérifier le cache
+      const cacheKey = getCacheKey(propertyId, date);
+      const cached = slotsCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return res.json({ slots: cached.slots });
+      }
       
       // Récupérer la propriété (sauf pour "general")
       let property = null;
@@ -687,6 +709,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (slots.some(s => s.priority > 0) && property) {
         console.log(`[Optimisation] ${slots.filter(s => s.priority > 0).length} créneaux optimisés trouvés pour ${property.ville}`);
       }
+
+      // Sauvegarder dans le cache
+      slotsCache.set(cacheKey, { slots, timestamp: Date.now() });
 
       res.json({ slots });
     } catch (error) {

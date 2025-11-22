@@ -45,7 +45,7 @@ const ToolsAdmin = () => (
   </div>
 );
 
-const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
+const StatsAdmin = () => {
   const { data: properties = [] } = useQuery({
     queryKey: ["/api/properties"],
   }) as any;
@@ -82,7 +82,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
       <div>
         <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Vue d'ensemble</h3>
         <div className="grid grid-cols-4 gap-3">
-          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("properties")}>
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-medium text-muted-foreground">Total des propriétés</CardTitle>
             </CardHeader>
@@ -94,7 +94,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("appointments")}>
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-medium text-muted-foreground">Visites programmées</CardTitle>
             </CardHeader>
@@ -104,7 +104,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("contacts")}>
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-medium text-muted-foreground">À traiter</CardTitle>
             </CardHeader>
@@ -114,7 +114,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onNavigate("bookings")}>
+          <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-medium text-muted-foreground">Ce mois-ci</CardTitle>
             </CardHeader>
@@ -133,34 +133,30 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
         </h3>
         <p className="text-sm text-muted-foreground mb-4">Accédez rapidement aux fonctionnalités principales</p>
         <div className="grid grid-cols-4 gap-3">
-          <button
-            onClick={() => onNavigate("properties")}
-            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          <div
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left"
           >
             <p className="text-sm font-semibold">Ajouter un bien</p>
             <p className="text-xs text-muted-foreground">Nouvelle propriété</p>
-          </button>
-          <button
-            onClick={() => onNavigate("bookings")}
-            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          </div>
+          <div
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left"
           >
             <p className="text-sm font-semibold">Réservations</p>
             <p className="text-xs text-muted-foreground">Locations saisonnières</p>
-          </button>
-          <button
-            onClick={() => onNavigate("contacts")}
-            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          </div>
+          <div
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left"
           >
             <p className="text-sm font-semibold">Demandes</p>
             <p className="text-xs text-muted-foreground">Contacts et visites</p>
-          </button>
-          <button
-            onClick={() => onNavigate("planning")}
-            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left hover:shadow-md transition-shadow"
+          </div>
+          <div
+            className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left"
           >
             <p className="text-sm font-semibold">Paramètres</p>
             <p className="text-xs text-muted-foreground">Configuration</p>
-          </button>
+          </div>
         </div>
       </div>
 
@@ -178,8 +174,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
               recentContacts.map((contact: any) => (
                 <div
                   key={contact.id}
-                  onClick={() => onNavigate("contacts")}
-                  className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted transition-colors"
+                  className="bg-muted/50 rounded-lg p-3"
                 >
                   <p className="font-semibold text-sm">{contact.nom}</p>
                   <p className="text-xs text-muted-foreground">{contact.email}</p>
@@ -207,8 +202,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
               recentProperties.map((property: any) => (
                 <div
                   key={property.id}
-                  onClick={() => onNavigate("properties")}
-                  className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted transition-colors"
+                  className="bg-muted/50 rounded-lg p-3"
                 >
                   <p className="font-semibold text-sm">{property.titre?.slice(0, 30)}...</p>
                   <p className="text-xs text-muted-foreground">{property.transactionType}</p>
@@ -234,8 +228,7 @@ const StatsAdmin = ({ onNavigate }: { onNavigate: (tab: string) => void }) => {
               recentAppointments.map((apt: any) => (
                 <div
                   key={apt.id}
-                  onClick={() => onNavigate("appointments")}
-                  className="bg-muted/50 rounded-lg p-3 cursor-pointer hover:bg-muted transition-colors"
+                  className="bg-muted/50 rounded-lg p-3"
                 >
                   <p className="font-semibold text-sm">{apt.nom}</p>
                   <p className="text-xs text-muted-foreground">{apt.email}</p>
@@ -330,6 +323,7 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [showLoginForm, setShowLoginForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("stats");
 
   useEffect(() => {
     // Vérifier si authentifié (via session)
@@ -428,8 +422,6 @@ export default function AdminDashboard() {
     );
   }
 
-  const [activeTab, setActiveTab] = useState("stats");
-
   const navItems = [
     { id: "stats", icon: BarChart3, label: "Tableau" },
     { id: "properties", icon: Building2, label: "Annonces" },
@@ -492,7 +484,15 @@ export default function AdminDashboard() {
         <div className="flex-1 overflow-y-auto p-8">
 
           {activeTab === "stats" && (
-            <StatsAdmin onNavigate={setActiveTab} />
+            <Card>
+              <CardHeader>
+                <CardTitle>Statistiques globales</CardTitle>
+                <CardDescription>Aperçu de votre activité KEYLOR</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <StatsAdmin />
+              </CardContent>
+            </Card>
           )}
 
           {activeTab === "properties" && (
