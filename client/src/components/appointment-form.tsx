@@ -46,6 +46,17 @@ export function AppointmentForm({ propertyId, origine, onSuccess }: AppointmentF
     return "audit";
   };
 
+  const getMotifLabel = (motif: string) => {
+    const labels: Record<string, string> = {
+      vendre: "Vendre mon bien",
+      gerer: "Faire gérer mon bien",
+      visite: "Visite d'un bien",
+      autre: "Autre",
+      audit: "Audit / Consultation"
+    };
+    return labels[motif] || labels.audit;
+  };
+
   const form = useForm<InsertAppointment>({
     resolver: zodResolver(insertAppointmentSchema),
     defaultValues: {
@@ -196,6 +207,8 @@ export function AppointmentForm({ propertyId, origine, onSuccess }: AppointmentF
                   <SelectContent>
                     <SelectItem value="vendre">Vendre mon bien</SelectItem>
                     <SelectItem value="gerer">Faire gérer mon bien</SelectItem>
+                    <SelectItem value="visite">Visite d'un bien</SelectItem>
+                    <SelectItem value="autre">Autre</SelectItem>
                     <SelectItem value="audit">Audit / Consultation</SelectItem>
                   </SelectContent>
                 </Select>

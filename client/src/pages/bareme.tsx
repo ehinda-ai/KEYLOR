@@ -214,7 +214,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-primary">À la charge du propriétaire</div>
                         <div className="space-y-2">
                           {alurScales.filter(s => s.factureA === 'proprietaire').map((scale) => (
-                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs border-l-2 border-primary/40 pl-3 py-1">
+                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs py-1">
                               <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
                               <span className="font-semibold text-accent text-right whitespace-nowrap">
                                 {scale.tauxPourcentage 
@@ -236,7 +236,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-accent">À la charge du locataire</div>
                         <div className="space-y-2">
                           {alurScales.filter(s => s.factureA === 'locataire').map((scale) => (
-                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs border-l-2 border-accent/40 pl-3 py-1">
+                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs py-1">
                               <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
                               <span className="font-semibold text-accent text-right whitespace-nowrap">
                                 {scale.tauxPourcentage 
@@ -258,7 +258,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-muted-foreground">À la charge du propriétaire et du locataire</div>
                         <div className="space-y-2">
                           {alurScales.filter(s => s.factureA === 'les_deux').map((scale) => (
-                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs border-l-2 border-muted-foreground/40 pl-3 py-1">
+                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs py-1">
                               <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
                               <span className="font-semibold text-accent text-right whitespace-nowrap">
                                 {scale.tauxPourcentage 
@@ -287,7 +287,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-primary">À la charge du propriétaire</div>
                         <div className="space-y-2">
                           {bauxCivil.filter(s => s.factureA === 'proprietaire').map((scale) => (
-                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs border-l-2 border-primary/40 pl-3 py-1">
+                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs py-1">
                               <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
                               <span className="font-semibold text-accent text-right whitespace-nowrap">
                                 {scale.honoraires 
@@ -307,7 +307,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-accent">À la charge du locataire</div>
                         <div className="space-y-2">
                           {bauxCivil.filter(s => s.factureA === 'locataire').map((scale) => (
-                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs border-l-2 border-accent/40 pl-3 py-1">
+                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs py-1">
                               <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
                               <span className="font-semibold text-accent text-right whitespace-nowrap">
                                 {scale.honoraires 
@@ -327,7 +327,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-muted-foreground">À la charge du propriétaire et du locataire</div>
                         <div className="space-y-2">
                           {bauxCivil.filter(s => s.factureA === 'les_deux').map((scale) => (
-                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs border-l-2 border-muted-foreground/40 pl-3 py-1">
+                            <div key={scale.id} className="flex justify-between items-start gap-4 text-xs py-1">
                               <span className="flex-1 font-medium text-foreground">{scale.nom}</span>
                               <span className="font-semibold text-accent text-right whitespace-nowrap">
                                 {scale.honoraires 
@@ -365,7 +365,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-primary">À la charge du propriétaire</div>
                         <div className="space-y-2">
                           {commercial.filter(s => s.factureA === 'proprietaire').map((scale) => (
-                            <div key={scale.id} className="text-xs border-l-2 border-primary/30 pl-3 py-1">
+                            <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
                                 <span className="flex-1 font-medium break-words">{scale.nom}</span>
                                 <span className="font-semibold text-accent text-right text-[10px] shrink-0 leading-tight">
@@ -400,7 +400,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic" style={{ color: '#D8BFA9' }}>À la charge du locataire</div>
                         <div className="space-y-2">
                           {commercial.filter(s => s.factureA === 'locataire').map((scale) => (
-                            <div key={scale.id} className="text-xs border-l-2 border-blue-600/30 pl-3 py-1">
+                            <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
                                 <span className="flex-1 font-medium break-words">{scale.nom}</span>
                                 <span className="font-semibold text-accent text-right text-[10px] shrink-0 leading-tight">
@@ -435,7 +435,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-muted-foreground">À la charge des deux parties</div>
                         <div className="space-y-2">
                           {commercial.filter(s => s.factureA === 'les_deux').map((scale) => (
-                            <div key={scale.id} className="text-xs border-l-2 border-purple-600/30 pl-3 py-1">
+                            <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
                                 <span className="flex-1 font-medium break-words">{scale.nom}</span>
                                 <span className="font-semibold text-accent text-right text-[10px] shrink-0 leading-tight">
@@ -477,7 +477,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-primary">À la charge du propriétaire</div>
                         <div className="space-y-2">
                           {stationnement.filter(s => s.factureA === 'proprietaire').map((scale) => (
-                            <div key={scale.id} className="text-xs border-l-2 border-primary/40 pl-3 py-1">
+                            <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
                                 <span className="flex-1 font-medium text-foreground break-words">{scale.nom}</span>
                                 <span className="font-semibold text-accent text-right text-[10px] shrink-0 whitespace-nowrap">
@@ -499,7 +499,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-accent">À la charge du locataire</div>
                         <div className="space-y-2">
                           {stationnement.filter(s => s.factureA === 'locataire').map((scale) => (
-                            <div key={scale.id} className="text-xs border-l-2 border-accent/40 pl-3 py-1">
+                            <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
                                 <span className="flex-1 font-medium text-foreground break-words">{scale.nom}</span>
                                 <span className="font-semibold text-accent text-right text-[10px] shrink-0 whitespace-nowrap">
@@ -521,7 +521,7 @@ function Bareme() {
                         <div className="text-xs font-semibold mb-2 italic text-muted-foreground">À la charge du propriétaire et du locataire</div>
                         <div className="space-y-2">
                           {stationnement.filter(s => s.factureA === 'les_deux').map((scale) => (
-                            <div key={scale.id} className="text-xs border-l-2 border-muted-foreground/40 pl-3 py-1">
+                            <div key={scale.id} className="text-xs py-1">
                               <div className="flex justify-between items-start gap-2">
                                 <span className="flex-1 font-medium text-foreground break-words">{scale.nom}</span>
                                 <span className="font-semibold text-accent text-right text-[10px] shrink-0 whitespace-nowrap">
