@@ -40,38 +40,13 @@ export function ImageUploader({
     setUploading(true);
 
     try {
-      // Créer une preview data URL
+      // Créer une data URL et l'utiliser directement (affichage immédiat, stockage simple)
       const reader = new FileReader();
-      reader.onloadend = async () => {
+      reader.onloadend = () => {
         const dataUrl = reader.result as string;
         setPreview(dataUrl);
-
-        try {
-          // Essayer d'upload sur GCS
-          const fileExtension = file.name.split('.').pop() || 'jpg';
-          const response = await apiRequest("POST", "/api/upload/get-url", { fileExtension });
-          const { uploadURL, objectPath } = await response.json();
-
-          // Upload le fichier directement sur Google Cloud Storage
-          const uploadResponse = await fetch(uploadURL, {
-            method: "PUT",
-            body: file,
-            headers: {
-              "Content-Type": file.type,
-            },
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error("Erreur lors de l'upload du fichier");
-          }
-
-          // Upload réussi: notifier le parent avec le chemin GCS
-          onUploadComplete(objectPath);
-        } catch (uploadErr) {
-          console.error("GCS upload error:", uploadErr);
-          // Fallback: utiliser la data URL locale
-          onUploadComplete(dataUrl);
-        }
+        // Utiliser la data URL directement - elle s'affiche dans tous les contexts
+        onUploadComplete(dataUrl);
       };
       reader.readAsDataURL(file);
       
